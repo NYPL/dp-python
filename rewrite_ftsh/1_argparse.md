@@ -4,8 +4,6 @@ parent: Rewriting ft.sh
 nav_order: 1
 ---
 
-# Creating a command-Line Python script with arguments
-
 ## Goals
 
 * Explain the purpose of the script
@@ -89,6 +87,7 @@ After examining `ft.sh` our goal is to create a Python script that:
 * accepts arguments using the flags `--source` and `--id`
 
 ### Creating and running a python script
+
 A python script is a text file with python code.
 Typically, it has a `.py` file extension, although this isn't required.
 So to create a script,
@@ -143,6 +142,7 @@ You can copy paste this code yourself to test it out.
 Next, major concepts of the module are explained and illustrated with examples.
 These concepts are typically arranged in order of common usage.
 For `argparse`, the concepts are:
+
 * the `ArgumentParser` object
 * the `add_argument()` method
 * the `parse_args()` method
@@ -154,6 +154,7 @@ Using `cmd+f` to jump to other portions of the page is frequently helpful.
 ### Adding a help function
 
 #### Import the module
+
 As shown in the initial example from the documentation, we need to first load `argparse` using an `import` statement. In general, all `import` statements should be at the beginning of a script, after a shebang.
 
 * Add `import argparse` after the shebang.
@@ -214,6 +215,7 @@ The powerful thing about `add_argument()` is the number of modifications we can 
 We'll review a few of the more usability focused modifications.
 
 #### Argument names
+
 The first argument(s) in the method are the names of the argument.
 These can take 3 forms.
 
@@ -241,6 +243,7 @@ To do this, add `metavar='...'` (e.g.`parser.add_argument('--source', metavar='p
 #### Adding everything together
 
 `ft.sh` required 2 inputs
+
 * the path to the source media
 * the Media ID number
 
@@ -259,7 +262,6 @@ help='media id assigned to the digital carrier', metavar='M######_####')
   * Run the script with the help flag.
   * Run the script without any argument.
   * Run the script with all required arguments
-
 
 ## A Skeleton Script
 
