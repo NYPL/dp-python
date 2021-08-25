@@ -4,6 +4,8 @@ parent: Rewriting ft.sh
 nav_order: 2
 ---
 
+## Goals
+
 Scripts perform the same action repeatedly.
 This means they also perform the same mistake repeatedly.
 Test-driven development is a method to pre-emptively address these potential mistakes before they become bugs.
@@ -17,6 +19,8 @@ Test-driven development requires a few additions to our scripting process.
 This may seem like a lot of overhead.
 However, this overhead encourages good coding practices like defining functions and handling errors.
 
+## Exploring Testing
+
 We can start with the basic question of how to write a test.
 That starts from our functional requirements.
 Each of our functional requirements should have some expected behaviors.
@@ -26,7 +30,7 @@ Ideally, the script would quit and tell the user why it was stopping.
 That makes for two tests, one where a folder is created as expected, and a second where the script errors out.
 In Python pseudo-code that might look like this.
 
-```py test_ft.py
+```py
 def test_no_errors():
     # run ft.py --id M1234-0001
     # expect to find xfer_path/M1234/M1234-0001
@@ -52,7 +56,7 @@ For each of these tests, there is a line `run ft.py --id M1234-0001` that will p
 These tests are only interested in those few lines of the script that create the transfer folders.
 It would be more efficient if the test could be more specific.
 
-```py test_ft.py
+```py
 def test_no_errors():
     # ft.create_transfer_folders(media_id='M1234-0001')
     # expect to find xfer_path/M1234/M1234-0001
@@ -203,7 +207,7 @@ For our default `create_transfer_folders()` test we want to assert that it does 
 
 From pseudocode
 
-```py test_ft.py
+```py
 def test_create_folders():
     # ft.create_transfer_folders(media_id='M1234-0001')
     # expect to find xfer_path/M1234/M1234-0001
@@ -211,7 +215,7 @@ def test_create_folders():
 
 To Python code
 
-```py test_ft.py
+```py
 def test_no_errors(self):
     ft.create_transfer_folders(media_id='M1234-0001')
     expected_folder = Path(transfer_path, 'M1234', 'M1234-0001')
@@ -247,7 +251,7 @@ def create_transfer_folders(media_id, ft_path=ft_path):
 Now in the test, we can override this path with a temporary directory.
 To see where the temporary directory is, we print it out.
 
-```py test_ft.py
+```py
 def test_no_errors(self):
     transfer_path = tempfile.tmpdir()
     ft.create_transfer_folders(media_id='M1234-0001', ft_path=transfer_path)
@@ -261,7 +265,7 @@ The test still fails.
 Every `Path()` object has a `mkdir()` method to do this.
 By default, `mkdir()` only creates a single directory, but it can make a chain of directories with an optional argument.
 
-```py ft.py
+```py
 def create_transfer_folders(media_id, ft_path=ft_path):
     
     coll_id = media_id.split('-')[0]
