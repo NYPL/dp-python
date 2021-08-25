@@ -205,13 +205,25 @@ The following demonstrates how to join together folder and filenames with each m
 ```py
 import os
 
-os.path.join(['path', 'to', 'directory'])
+os.path.join('path', 'to', 'directory')
 ```
 
 ```py
 import pathlib
 
-pathlib.Path('path').joinpath('to').joinpath('directory')
+pathlib.Path('path', 'to', 'directory')
+```
+
+These look very similar, but they start to drift when getting more complicated.
+
+```py
+os.path.join('path', 'to', 'directory', os.path.basename())
+```
+
+```py
+import pathlib
+
+pathlib.Path('path', 'to', 'directory')
 ```
 
 Before moving on, it's useful to look at the differences between these two methods.
