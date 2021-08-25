@@ -282,3 +282,76 @@ Running the test again should result in two passes.
 That's just tests part of our requirements.
 We probably want to add `self.assertTrue()` statements for the other directories.
 We also need to think about what should happen when a directory already exists.
+
+## Current Scripts
+
+ft.py
+
+```py
+#!/usr/bin/env python3
+
+import argparse
+from pathlib import Path
+
+ft_path = '/Volumes/DigArchDiskStation/Staging/ingest/fileTransfers'
+
+def our_parse_args():
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--source', required = True,
+    help='path to the root of the digital carrier', metavar='path/to/carrier')
+    parser.add_argument('--id', required = True,
+    help='media id assigned to the digital carrier', metavar='M######_####')
+
+    return parser.parse_args()
+
+
+def create_transfer_folders(media_id, ft_path=ft_path):   
+    coll_id = media_id.split('-')[0]
+    dest_path = Path(ft_path).joinpath(coll_id).joinpath(media_id)
+    md_path = dest_path.joinpath('metadata')
+    subdoc_path = md_path.joinpath('submissionDocumentation')
+    object_path = dest_path.joinpath('object')
+
+    subdoc_path.mkdir(parents=True)
+
+
+def main():
+
+    args = our_parse_args()
+    create_transfer_folders(args.id)
+ 
+
+if __name__ == '__main__':
+    main()
+```
+
+test_ft.py
+```py
+import unittest
+import tempfile
+
+import ft
+
+from pathlib import Path
+
+
+class CommandLineTest(unittest.TestCase):
+
+    def test_required_parser(self):
+        self.assertTrue(True)
+
+
+class Xfer_Test(unittest.TestCase):
+    def test_create_xfer_dirs(self):
+        tmpdir = tempfile.mkdtemp()
+        ft.create_transfer_folders(media_id='M1234-0001', ft_path=tmpdir)
+        expected_folder = Path(tmpdir, 'M1234', 'M1234-0001')
+        self.assertTrue(expected_folder.exists())
+
+    def test_error_if_dest_path_exists():
+        # create xfer_path/M1234/M1234-0001
+        # run ft.py --id M1234-0001
+        # expect ft.py to quit
+        # expect ft.py to report "Media may have been transferred, make sure that the entered ID is correct"
+
+```
