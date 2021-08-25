@@ -236,7 +236,7 @@ And, we'll have to make it possible to change the `ft_path` that's currently har
 First for the hard-coded `ft_path`, we'll define the variable outside of the scope of any function.
 And then, we'll add an argument to `create_transfer_folders()` with a default of `ft_path`.
 
-```py ft.py
+```py
 ft_path = '/Volumes/DigArchDiskStation/Staging/ingest/fileTransfers'
 
 def create_transfer_folders(media_id, ft_path=ft_path):
