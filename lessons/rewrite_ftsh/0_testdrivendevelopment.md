@@ -12,7 +12,7 @@ We call those mistakes bugs.
 
 The goal of this module is to introduce test-driven development, a way of writing code that proactively checks for those bugs.
 
-## Why Test-Driven Devlopment
+## Why Test-Driven Development
 
 When first learning to write code, a common method is to use an exploratory approach.
 You have some information/data, and you want to a specific result.
@@ -92,11 +92,10 @@ Their syntax is very similar to an `if` statement, except there is no colon at t
 
 ```py
 import filetransfer
-import pathlib
 
 def test_completedtransfer():
     filetransfer.main()
-    assert pathlib.Path('/path/to/destination').exists()
+    assert
 ```
 
 To check our test, use the auto-discovery feature of pytest.

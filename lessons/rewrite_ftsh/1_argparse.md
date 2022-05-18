@@ -181,16 +181,16 @@ The loop for writing these tests will be.
 This test brings up one of the hardest tasks in programming, naming things.
 We want argument names that are both descriptive but not annoyingly long to type out.
 For now, let's say that the argument name for the media id should be `--id` and for the path should be `--source`.
-A run of this script would be `python filetransfer.py python filetransfer.py --source /path/to/source --id M12345-0001`.
+A run of this script would be `python filetransfer.py python filetransfer.py --source path/to/source --id M12345-0001`.
 
 ```py
 # unit tests
 # command line tests
 
 def test_required_args(monkeypatch):
-  monkeypatch.setattr('sys.argv', ['filetransfer.py', '--source', '/path/to/source', '--id', 'M12345-0001'])
+  monkeypatch.setattr('sys.argv', ['filetransfer.py', '--source', 'path/to/source', '--id', 'M12345-0001'])
   args = filetransfer.parse_args()
-  assert args.source == '/path/to/source'
+  assert args.source == 'path/to/source'
   assert args.id == 'M12345-0001'
 ```
 
@@ -429,7 +429,7 @@ Let's write a test for that.
 ```py
 def test_bad_id(monkeypatch):
   bad_id ='N12345-0001'
-  monkeypatch.setattr('sys.argv', ['filetransfer.py', '--source', '/path/to/source', '--id', bad_id])
+  monkeypatch.setattr('sys.argv', ['filetransfer.py', '--source', 'path/to/source', '--id', bad_id])
 
   with pytest.raises(SystemExit):
     filetransfer.parse_args()
