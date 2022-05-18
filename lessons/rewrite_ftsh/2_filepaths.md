@@ -455,8 +455,7 @@ Let's address that.
 Unfortunately, `pathlib` does not have a method for checking writability.
 We will need to use the [`os.access` function](https://docs.python.org/3/library/os.html#os.access) for this.
 The testing template is the same.
-In this case the test will be `os.access(path/to/dir, os.W_OK)`
-
+In this case, the test will be `os.access(path/to/dir, os.W_OK)`
 
 We used the type argument to test the existence of the file.
 We can only use that argument once.
@@ -520,17 +519,17 @@ Our test will need to
 ```py
 
 def test_create_directories(dest_dir):
-	media_id = 'M12345-0001'
-	collection = media_id.split('-')[0]
-	coll_dir = dest_dir.joinpath(collection)
-	id_dir = coll_dir.joinpath(media_id)
-	object_dir = id_dir.joinpath('objects')
-	subDoc_dir = id_dir.joinpath('metadata').joinpath('submissionDocumentation')
+    media_id = 'M12345-0001'
+    collection = media_id.split('-')[0]
+    coll_dir = dest_dir.joinpath(collection)
+    id_dir = coll_dir.joinpath(media_id)
+    object_dir = id_dir.joinpath('objects')
+    subDoc_dir = id_dir.joinpath('metadata').joinpath('submissionDocumentation')
 
-	returned_object_dir = filetransfer.create_dirs(dest_dir, media_id)
+    returned_object_dir = filetransfer.create_dirs(dest_dir, media_id)
 
-	assert object_dir.exists()
-	assert subDoc_dir.exists()
+    assert object_dir.exists()
+    assert subDoc_dir.exists()
     assert object_dir == returned_object_dir
 ```
 
