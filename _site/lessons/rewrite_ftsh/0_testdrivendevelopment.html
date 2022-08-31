@@ -1,0 +1,171 @@
+<h2 id="goals">Goals</h2>
+
+<p>Scripts perform the same action repeatedly.
+This means they also perform the same mistake repeatedly.
+We call those mistakes bugs.</p>
+
+<p>The goal of this module is to introduce test-driven development, a way of writing code that proactively checks for those bugs.</p>
+
+<h2 id="why-test-driven-development">Why Test-Driven Development</h2>
+
+<p>When first learning to write code, a common method is to use an exploratory approach.
+You have some information/data, and you want to a specific result.</p>
+
+<ol>
+  <li>Write some code that gets you closer to the result</li>
+  <li>Run the script and test if it does the thing you want
+    <ul>
+      <li>If it fails your test, adjust the code and go back to 2</li>
+      <li>If it passes your test, go to 1 and write more code</li>
+    </ul>
+  </li>
+</ol>
+
+<p>This eventually creates a script that does what you want, but it is probably more complicated, less efficient, or non-optimal in other ways.
+If you want to go back to improve it, how do you know that a change won’t cause a bug somewhere down the line?</p>
+
+<p>Test-driven development addresses this by changing the order of the process above.</p>
+
+<ol>
+  <li>Write some code that tests the behavior of your script</li>
+  <li>Add code to your script that performs that behavior</li>
+  <li>Run your tests
+    <ul>
+      <li>If the tests fail, adjust the script and go back to 3</li>
+      <li>If the tests pass, go to 1 and write more tests</li>
+    </ul>
+  </li>
+</ol>
+
+<p>In effect, we are writing two scripts in parallel.
+The first script encodes what we would want a script to do.
+The second script encodes one way of accomplishing that.</p>
+
+<p>If we improve, update, or alter the second script, we can use the first to test that it still does what we expect it to do.</p>
+
+<h2 id="two-types-of-test">Two Types of Test</h2>
+
+<p>When testing, you can look at two different levels of test, unit test and functional test.</p>
+
+<ul>
+  <li>functional test - a test to see if the larger purpose is met by the code</li>
+  <li>unit test - a test to see if a specific portion of code performs as expected</li>
+</ul>
+
+<p>For example, a functional test of <code class="language-plaintext highlighter-rouge">ft.sh</code> would check if the script successfully transfers the files when given the correct inputs.
+A unit test of <code class="language-plaintext highlighter-rouge">ft.sh</code> would check that the portion of the script that parses the inputs raises an error if it receives bad inputs.</p>
+
+<p>We’ll start by writing a functional test and then build unit tests as we develop the body of the script.
+That also means that our first test will always fail until we have completed the script.</p>
+
+<h2 id="using-pytest">Using PyTest</h2>
+
+<p>There are a few Python testing framework.
+We’re going to use PyTest, primarily because it’s recommended by Joanna White.</p>
+
+<p>To start our project, we’ll create two files <code class="language-plaintext highlighter-rouge">filetransfer_test.py</code> and <code class="language-plaintext highlighter-rouge">filetransfer.py</code></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>project_folder
+├── filetransfer.py
+└── filetransfer_test.py
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">filetransfer_test.py</code> has to test the code within <code class="language-plaintext highlighter-rouge">filetransfer.py</code>.
+To do this, we import the script into the test script.</p>
+
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">filetransfer</span>
+</code></pre></div></div>
+
+<p>This looks exactly like importing a module into your script, because this is how module imports work.
+Python first looks for a file with the correct name in the working directory.
+If it can’t find a file with that name, it looks in common locations for module installation.</p>
+
+<p>Next we define our first functional test.
+For now, we have to make a few assumptions about our script.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">filetransfer.py</code> will have a <code class="language-plaintext highlighter-rouge">main()</code> function that performs the actions we want.</li>
+  <li>A successful run of <code class="language-plaintext highlighter-rouge">filetransfer.py</code> will create the appropriate folder at a destination.</li>
+  <li>We’ll learn a better way to refer to that folder in our test in the future.</li>
+</ul>
+
+<p>To test that the script performs the actions we want, we will need a function that runs <code class="language-plaintext highlighter-rouge">filetransfer.main()</code>.
+Then it checks if the appropriate folder is created.</p>
+
+<p>Every test that we write will have one or more <code class="language-plaintext highlighter-rouge">assert</code> statements.
+These evaluate whether a statement is true.
+Their syntax is very similar to an <code class="language-plaintext highlighter-rouge">if</code> statement, except there is no colon at the end that sets off another code-block.</p>
+
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">filetransfer</span>
+
+<span class="k">def</span> <span class="nf">test_completedtransfer</span><span class="p">():</span>
+    <span class="n">filetransfer</span><span class="p">.</span><span class="n">main</span><span class="p">()</span>
+    <span class="k">assert</span>
+</code></pre></div></div>
+
+<p>To check our test, use the auto-discovery feature of pytest.
+In the project directory, run <code class="language-plaintext highlighter-rouge">pytest</code> and you’ll see the following.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>collected 1 item
+
+test_python.py F                             <span class="o">[</span>100%]
+
+<span class="o">===============</span> FAILURES <span class="o">==========================</span>
+_______________ test_completedtransfer ____________
+
+    def test_completedtransfer<span class="o">()</span>:
+<span class="o">&gt;</span>       filetransfer.main<span class="o">()</span>
+E       AttributeError: module <span class="s1">'filetransfer'</span> has no attribute <span class="s1">'main'</span>
+
+filetransfer_test.py:5: AttributeError
+<span class="o">===============</span> short <span class="nb">test </span>summary info <span class="o">===========</span>
+FAILED filetransfer_test.py::test_completedtransfer - AttributeError: module <span class="s1">'filetransfer'</span> has no attribute <span class="s1">'main'</span>
+</code></pre></div></div>
+
+<p>Failure is a sign of good coding practice.
+If you’re writing tests and running tests first, every test will fail at least in its life.
+This particular test will fail until we finish rewriting <code class="language-plaintext highlighter-rouge">ft.sh</code>.</p>
+
+<p>The important thing is that we read why the test failed, and address those errors that we can.
+In this case, <code class="language-plaintext highlighter-rouge">'filetransfer' has no attribute 'main'</code> makes sense because <code class="language-plaintext highlighter-rouge">filetransfer.py</code> doesn’t have a single line of code, much less a definition for <code class="language-plaintext highlighter-rouge">main()</code>.
+We can address that immediately.</p>
+
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">return</span>
+</code></pre></div></div>
+
+<p>This function does nothing except exist.
+When we rerun <code class="language-plaintext highlighter-rouge">pytest</code>, the output changes.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>test_python.py F                                   <span class="o">[</span>100%]
+
+<span class="o">========================</span> FAILURES <span class="o">========================</span>
+_________________ test_completedtransfer _________________
+
+    def test_completedtransfer<span class="o">()</span>:
+        filetransfer.main<span class="o">()</span>
+<span class="o">&gt;</span>       assert pathlib.Path<span class="o">(</span><span class="s1">'/path/to/destination'</span><span class="o">)</span>.exists<span class="o">()</span>
+E       AssertionError: assert False
+...
+filetransfer_test.py.py:6: AssertionError
+<span class="o">================</span> short <span class="nb">test </span>summary info <span class="o">=================</span>
+FAILED filetransfer_test.py::test_completedtransfer - AssertionError: assert False
+<span class="o">===================</span> 1 failed <span class="k">in </span>0.04s <span class="o">====================</span>
+</code></pre></div></div>
+
+<p>The failure is now where we want it.
+<code class="language-plaintext highlighter-rouge">AssertionError: assert False</code> means that the thing we want to be true is not true, because the code does not accomplish what we want.</p>
+
+<p>We will return to this particular test over the next few lessons to incorporate additional code.
+For now, we established the pattern for test-driven development.</p>
+
+<h2 id="summary">Summary</h2>
+
+<p>In test-driven development:</p>
+
+<ol>
+  <li>Figure out what your code should do (and what it should not do)</li>
+  <li>Write a test function or functions to see if your code passes your test</li>
+  <li>Run the tests to check that your new tests fail as expected</li>
+  <li>Write code that will make your tests pass</li>
+</ol>

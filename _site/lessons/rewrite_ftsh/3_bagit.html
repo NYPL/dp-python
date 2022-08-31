@@ -1,0 +1,30 @@
+<h2 id="goals">Goals</h2>
+
+<ul>
+  <li>Creating file fixtures to test file manipulations</li>
+  <li>Using bagit-python within a python script</li>
+</ul>
+
+<h2 id="bagging-requirements">Bagging Requirements</h2>
+
+<p><code class="language-plaintext highlighter-rouge">bagit-python</code> is most commonly used as a command-line tool, <code class="language-plaintext highlighter-rouge">bagit.py --validate path/to/bag</code>.
+However, that shell tool is itself a Python script, with classes and functions you can import into other Python scripts.</p>
+
+<p>This was the same case as <code class="language-plaintext highlighter-rouge">bagit-java</code> which was used in <code class="language-plaintext highlighter-rouge">ft.sh</code>.
+Part of the reason for rewriting <code class="language-plaintext highlighter-rouge">ft.sh</code> was that <code class="language-plaintext highlighter-rouge">bagit-java</code> removed its command-line interface.
+That meant that we would either have to maintain an out-of-date version of <code class="language-plaintext highlighter-rouge">bagit-java</code>, rewrite <code class="language-plaintext highlighter-rouge">ft.sh</code> as a Java applet, or switch to another <code class="language-plaintext highlighter-rouge">bagit</code> tool.
+As long as we were switching to <code class="language-plaintext highlighter-rouge">bagit-python</code> we might as improve <code class="language-plaintext highlighter-rouge">ft.sh</code> as well.</p>
+
+<p>Our goal in using <code class="language-plaintext highlighter-rouge">bagit-python</code> is to have a structure that holds fixity information that we can reuse when we return to a project, weeks or months later.
+We’d like for the fixity information to be generated from the original file from the media.
+And we’d like to know if anything went wrong during the transfer.</p>
+
+<p>So for bagging, we have a few requirements.</p>
+
+<ol>
+  <li>transfer the files from the carrier to the destination</li>
+  <li>package files into a bag</li>
+  <li>report if there were any files left behind</li>
+  <li>report the number and total size of the files</li>
+</ol>
+
