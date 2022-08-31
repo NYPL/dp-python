@@ -1,0 +1,124 @@
+<h2 id="goals">Goals</h2>
+
+<ul>
+  <li>Managing Python versions</li>
+  <li>Managing Python modules</li>
+</ul>
+
+<h2 id="what-is-a-virtual-environment">What is a virtual environment</h2>
+
+<p>A shell session has an environment that includes many configurations.
+If you want to change that environment, you can alter those configurations for the duration of the session, customize your profile to create a new default environment, or load a different shell.
+None of these options work well if you want to repeatedly alter a part of the environment in the same way while retaining most of the existing environment.</p>
+
+<p>For example, you have a set of scripts that was written in Python 3.6 and another set that was written in Python 3.10.
+You don’t have the resources to update the Python 3.6 scripts right now, but you still need to use them.
+Ideally you would be able to do the following <code class="language-plaintext highlighter-rouge">python 3.6project/script.py</code> and <code class="language-plaintext highlighter-rouge">python 3.10project/script.py</code> and each would use the right version of Python.</p>
+
+<p>Or maybe you are working on a project using the <code class="language-plaintext highlighter-rouge">bagit-python</code> module, and new version came out.
+That new version has a feature that would make your day-to-day calls of <code class="language-plaintext highlighter-rouge">bagit.py</code> easier, but you also need some time to make sure that new version doesn’t break your project.</p>
+
+<p>This is what virtual environments are for.
+They give you the ability to create environments with all the right tools installed and that you can turn on and off as needed.</p>
+
+<p>There are a number of virtual environment managers.
+If you have used anaconda, you might be familiar with <code class="language-plaintext highlighter-rouge">conda</code>.
+You might have heard about the Python <code class="language-plaintext highlighter-rouge">virtualenv</code> module.
+In Ruby contexts, <code class="language-plaintext highlighter-rouge">rbenv</code> is very common.</p>
+
+<p>For this lesson, we’re using a combination of two tools, <code class="language-plaintext highlighter-rouge">pyenv</code> and <code class="language-plaintext highlighter-rouge">pyenv-virtualenv</code>.
+They combine very nice features of <code class="language-plaintext highlighter-rouge">rbenv</code> and <code class="language-plaintext highlighter-rouge">virtualenv</code>.
+From <code class="language-plaintext highlighter-rouge">rbenv</code>, we get the ability to install multiple versions of Python and to associate any working directory with a specific version.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pyenv global 3.9.4
+<span class="nb">cd </span>path/to/project/dir
+pyenv <span class="nb">local </span>3.7.13
+python <span class="nt">-V</span>
+<span class="o">&gt;</span> 3.7.13
+<span class="nb">cd</span> ../
+python <span class="nt">-V</span>
+<span class="o">&gt;</span> 3.9.4
+</code></pre></div></div>
+
+<p>That means that once a version of Python is configured for a folder, we don’t have to do anything extra as long as we are working within that directory.
+In other virtual environments, you might have to run code like <code class="language-plaintext highlighter-rouge">source venv/bin/activate</code>.</p>
+
+<p>We can also quickly change between versions quickly.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pyenv <span class="nb">local </span>3.7.13
+python script.py
+<span class="c"># script works as expected</span>
+pyenv <span class="nb">local </span>3.9.4
+python script.py
+<span class="c"># script returns an error that we'll need to address to upgrade to 3.9.4</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">python-virtualenv</code> adds module management to the mix.
+If we need a specific version of a module for a project, we can create a virtualenv associated just to the project’s directory.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip <span class="nb">install </span>bagit
+<span class="nb">cd </span>path/to/project/dir
+pyenv virtualenv 3.7.13 project-env
+pyenv <span class="nb">local </span>project-env
+pip <span class="nb">install </span><span class="nv">bagit</span><span class="o">==</span>1.6.1
+pip list
+<span class="o">&gt;</span> ...
+<span class="o">&gt;</span> awscli        1.6.1
+<span class="o">&gt;</span> ...
+<span class="nb">cd</span> ../
+pip list
+<span class="o">&gt;</span> ...
+<span class="o">&gt;</span> awscli        1.8.1
+<span class="o">&gt;</span> ...
+</code></pre></div></div>
+
+<p>There is a learning curve to using virtual environments.
+They can require that you change some of your typical practices.
+If you often call scripts from another working directory, e.g. <code class="language-plaintext highlighter-rouge">python ~/dev/project-dir/script.py</code>, you might need to change that practice.
+If you forget which virtual environment you’re using, you’ll probably become very practiced at running <code class="language-plaintext highlighter-rouge">python -V</code> or <code class="language-plaintext highlighter-rouge">pyenv local</code>.</p>
+
+<p>Once virtual environments feel familiar, they might become part of your default project start-up.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir </span>new-project
+<span class="nb">cd </span>new-project
+pyenv virtualenv 3.9.4 new-project-env
+...
+</code></pre></div></div>
+
+<p>But to use them, we need to install the tools.</p>
+
+<h2 id="install-pyenv-and-pyenv-virtualenv">Install <code class="language-plaintext highlighter-rouge">pyenv</code> and <code class="language-plaintext highlighter-rouge">pyenv-virtualenv</code></h2>
+
+<p>The most up-to-date installation directions are available on the <a href="https://github.com/pyenv/pyenv#installation"><code class="language-plaintext highlighter-rouge">pyenv</code></a> and <a href="https://github.com/pyenv/pyenv-virtualenv#installation"><code class="language-plaintext highlighter-rouge">pyenv-virtualenv</code></a> GitHub repos.
+This section presents one method installing the tools to demonstrate ideas from the previous lesson.</p>
+
+<h3 id="install-via-homebrew">Install via homebrew</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew <span class="nb">install </span>pyenv pyenv-virtualenv
+</code></pre></div></div>
+
+<h3 id="configure-your-shell-profile">Configure your shell profile</h3>
+
+<p>In order for <code class="language-plaintext highlighter-rouge">pyenv</code> to pull up the correct version of Python, it needs to be part of the <code class="language-plaintext highlighter-rouge">PATH</code>.
+The program also needs to be initialized whenever you start a new session.
+Both of these are functions that can be run from a profile.</p>
+
+<p>Open your profile in code, <code class="language-plaintext highlighter-rouge">code ~/.profile</code> and add the following if it has not been added already.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Configure pyenv</span>
+<span class="nb">export </span><span class="nv">PYENV_ROOT</span><span class="o">=</span><span class="s2">"</span><span class="nv">$HOME</span><span class="s2">/.pyenv"</span>
+<span class="nb">command</span> <span class="nt">-v</span> pyenv <span class="o">&gt;</span>/dev/null <span class="o">||</span> <span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PYENV_ROOT</span><span class="s2">/bin:</span><span class="nv">$PATH</span><span class="s2">"</span>
+<span class="nb">eval</span> <span class="s2">"</span><span class="si">$(</span>pyenv init -<span class="si">)</span><span class="s2">"</span>
+</code></pre></div></div>
+
+<p>Save and close the profile.</p>
+
+<h3 id="test-the-installation">Test the installation</h3>
+
+<p>Open a new shell session and see if <code class="language-plaintext highlighter-rouge">pyenv</code> is correctly configured by running some of its commands.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pyenv versions
+<span class="o">&gt;</span> system
+pyenv global
+<span class="o">&gt;</span> system
+</code></pre></div></div>
