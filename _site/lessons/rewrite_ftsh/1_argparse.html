@@ -1,148 +1,35 @@
-<h2 id="goals">Goals</h2>
-
-<ul>
-  <li>Document what user input we need to support</li>
-  <li>Write tests to check if our script accepts that input</li>
-  <li>Build a command-line interface for our script</li>
-</ul>
-
-<h2 id="user-input-requirements">User Input Requirements</h2>
-
-<p><code class="language-plaintext highlighter-rouge">ft.sh</code> has two points where it asks for user input.</p>
-
-<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="nt">-e</span> <span class="s2">"</span><span class="k">${</span><span class="nv">BLUE</span><span class="k">}</span><span class="s2">Please drag the SIP folder over this window. See the folder path displayed? Hit return!:</span><span class="k">${</span><span class="nv">NC</span><span class="k">}</span><span class="s2">"</span>
+<!DOCTYPE html> <html lang="en-US"> <head> <meta charset="UTF-8"> <meta http-equiv="X-UA-Compatible" content="IE=Edge"> <title>Creating a command-line script with arguments - NYPL DP Python Workshop</title> <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"> <link rel="stylesheet" href="/assets/css/just-the-docs-default.css"> <script type="text/javascript" src="/assets/js/vendor/lunr.min.js"></script> <script type="text/javascript" src="/assets/js/just-the-docs.js"></script> <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Begin Jekyll SEO tag v2.8.0 --> <title>Creating a command-line script with arguments | NYPL DP Python Workshop</title> <meta name="generator" content="Jekyll v3.9.2" /> <meta property="og:title" content="Creating a command-line script with arguments" /> <meta property="og:locale" content="en_US" /> <link rel="canonical" href="http://localhost:4000/lessons/rewrite_ftsh/1_argparse.html" /> <meta property="og:url" content="http://localhost:4000/lessons/rewrite_ftsh/1_argparse.html" /> <meta property="og:site_name" content="NYPL DP Python Workshop" /> <meta property="og:type" content="website" /> <meta name="twitter:card" content="summary" /> <meta property="twitter:title" content="Creating a command-line script with arguments" /> <script type="application/ld+json"> {"@context":"https://schema.org","@type":"WebPage","headline":"Creating a command-line script with arguments","url":"http://localhost:4000/lessons/rewrite_ftsh/1_argparse.html"}</script> <!-- End Jekyll SEO tag --> </head> <body> <svg xmlns="http://www.w3.org/2000/svg" style="display: none;"> <symbol id="svg-link" viewBox="0 0 24 24"> <title>Link</title> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link"> <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path> </svg> </symbol> <symbol id="svg-search" viewBox="0 0 24 24"> <title>Search</title> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"> <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line> </svg> </symbol> <symbol id="svg-menu" viewBox="0 0 24 24"> <title>Menu</title> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"> <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line> </svg> </symbol> <symbol id="svg-arrow-right" viewBox="0 0 24 24"> <title>Expand</title> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"> <polyline points="9 18 15 12 9 6"></polyline> </svg> </symbol> <symbol id="svg-doc" viewBox="0 0 24 24"> <title>Document</title> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file"> <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline> </svg> </symbol> <!-- Feather. MIT License: https://github.com/feathericons/feather/blob/master/LICENSE --> <symbol id="svg-external-link" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link"> <title id="svg-external-link-title">(external link)</title> <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line> </symbol> </svg> <div class="side-bar"> <div class="site-header"> <a href="/" class="site-title lh-tight"> NYPL DP Python Workshop </a> <a href="#" id="menu-button" class="site-button"> <svg viewBox="0 0 24 24" class="icon"><use xlink:href="#svg-menu"></use></svg> </a> </div> <nav role="navigation" aria-label="Main" id="site-nav" class="site-nav"> <ul class="nav-list"><li class="nav-list-item"><a href="/" class="nav-list-link">About</a></li><li class="nav-list-item active"><a href="#" class="nav-list-expander"><svg viewBox="0 0 24 24"><use xlink:href="#svg-arrow-right"></use></svg></a><a href="/lessons/rewrite_ftsh/overall.html" class="nav-list-link">Rewriting ft.sh</a><ul class="nav-list "><li class="nav-list-item "><a href="/lessons/rewrite_ftsh/0_testdrivendevelopment.html" class="nav-list-link">Test-driven Development</a></li><li class="nav-list-item active"><a href="/lessons/rewrite_ftsh/1_argparse.html" class="nav-list-link active">Creating a command-line script with arguments</a></li><li class="nav-list-item "><a href="/lessons/rewrite_ftsh/2_filepaths.html" class="nav-list-link">Manipulating file paths</a></li><li class="nav-list-item "><a href="/lessons/rewrite_ftsh/3_bagit.html" class="nav-list-link">Using bagit-python in Python</a></li><li class="nav-list-item "><a href="/lessons/rewrite_ftsh/4_subprocess.html" class="nav-list-link">Running shell commands</a></li><li class="nav-list-item "><a href="/lessons/rewrite_ftsh/5_scriptboilerplate.html" class="nav-list-link">Finishing the script</a></li></ul></li><li class="nav-list-item"><a href="#" class="nav-list-expander"><svg viewBox="0 0 24 24"><use xlink:href="#svg-arrow-right"></use></svg></a><a href="/lessons/environment/overall.html" class="nav-list-link">Creating an Environment</a><ul class="nav-list "><li class="nav-list-item "><a href="/lessons/environment/3_editingcode.html" class="nav-list-link">Editing Code</a></li><li class="nav-list-item "><a href="/lessons/environment/1_shellandterminal.html" class="nav-list-link">Shell and Terminal</a></li><li class="nav-list-item "><a href="/lessons/environment/4_versioncontrol.html" class="nav-list-link">Version Control</a></li><li class="nav-list-item "><a href="/lessons/environment/2_virtualenvironments.html" class="nav-list-link">Virtual Environments</a></li></ul></li></ul> </nav> <footer class="site-footer"> This site uses <a href="https://github.com/just-the-docs/just-the-docs">Just the Docs</a>, a documentation theme for Jekyll. </footer> </div> <div class="main" id="top"> <div id="main-header" class="main-header"> <div class="search"> <div class="search-input-wrap"> <input type="text" id="search-input" class="search-input" tabindex="0" placeholder="Search NYPL DP Python Workshop" aria-label="Search NYPL DP Python Workshop" autocomplete="off"> <label for="search-input" class="search-label"><svg viewBox="0 0 24 24" class="search-icon"><use xlink:href="#svg-search"></use></svg></label> </div> <div id="search-results" class="search-results"></div> </div> </div> <div id="main-content-wrap" class="main-content-wrap"> <nav aria-label="Breadcrumb" class="breadcrumb-nav"> <ol class="breadcrumb-nav-list"> <li class="breadcrumb-nav-list-item"><a href="/lessons/rewrite_ftsh/overall.html">Rewriting ft.sh</a></li> <li class="breadcrumb-nav-list-item"><span>Creating a command-line script with arguments</span></li> </ol> </nav> <div id="main-content" class="main-content" role="main"> <h2 id="goals"> <a href="#goals" class="anchor-heading" aria-labelledby="goals"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Goals </h2> <ul> <li>Document what user input we need to support</li> <li>Write tests to check if our script accepts that input</li> <li>Build a command-line interface for our script</li> </ul> <h2 id="user-input-requirements"> <a href="#user-input-requirements" class="anchor-heading" aria-labelledby="user-input-requirements"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> User Input Requirements </h2> <p><code class="language-plaintext highlighter-rouge">ft.sh</code> has two points where it asks for user input.</p> <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="nt">-e</span> <span class="s2">"</span><span class="k">${</span><span class="nv">BLUE</span><span class="k">}</span><span class="s2">Please drag the SIP folder over this window. See the folder path displayed? Hit return!:</span><span class="k">${</span><span class="nv">NC</span><span class="k">}</span><span class="s2">"</span>
 <span class="nb">echo</span> <span class="nt">-e</span> <span class="s2">"</span><span class="k">${</span><span class="nv">BLUE</span><span class="k">}</span><span class="s2">Please enter the MediaID for this file transfer and hit return:</span><span class="k">${</span><span class="nv">NC</span><span class="k">}</span><span class="s2">"</span>
-</code></pre></div></div>
-
-<p>The folder path is an absolute path to the digitial carrier being transferred, such as <code class="language-plaintext highlighter-rouge">/Volumes/mounted-hard-drive</code>
-The MediaID is an ID created by NYPL to uniquely identify the carrier.
-It consists of the collection number, a dash, and a sequential number for the media in the collection, such as <code class="language-plaintext highlighter-rouge">M123456-0001</code>.
-Both of these inputs are required.</p>
-
-<p>Currently, <code class="language-plaintext highlighter-rouge">ft.sh</code> accepts inputs interactively.
-First, you run the script.
-Then, a prompt appears asking you for a file path.
-Then, another prompt appears asking you for a MediaID.
-Each of these steps contain a lot of help text.</p>
-
-<p>We’re going to change this behavior and have all user input happen as arguments to the first command, e.g. <code class="language-plaintext highlighter-rouge">filetransfer.py -arg1 /Volumes/mounted-hard-drive -arg2 M123456-0001</code>
-This will make it easier to further automate the command in the future since you don’t need to sit at the computer and wait for the prompt.
-We’re also going to require both pieces of input, and we’ll have a help interface to explain these features.</p>
-
-<p>So our requirements for the command-line interface are:</p>
-
-<ol>
-  <li>Accept a Media ID and a carrier path</li>
-  <li>Require both a Media ID and a carrier path to run</li>
-  <li>Provide help text</li>
-</ol>
-
-<p>Before we build the code to accomplish this, we’ll build the tests to see if we were successful.</p>
-
-<h2 id="writing-tests-for-command-line-input">Writing Tests for Command Line Input</h2>
-
-<p>We need two things to test the command line interface for the script.</p>
-
-<ol>
-  <li>A way to refer to the command-line portion of the script from our test script</li>
-  <li>A way to for the test script to send command-line arguments</li>
-</ol>
-
-<h3 id="functions-and-testing">Functions and Testing</h3>
-
-<p>In order to refer to the command-line portion of the script, we need a name to refer to it.
-That’s one of the benefits of creating a function.</p>
-
-<p>The following examples of pseudo-code are roughly equal.
-A piece of data is processed by one function, <code class="language-plaintext highlighter-rouge">str</code>, and the result is processed by a second function, <code class="language-plaintext highlighter-rouge">parse</code>.
-The final result is stored to a variable called <code class="language-plaintext highlighter-rouge">result</code>.</p>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">variable</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">argument</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</code></pre></div></div> <p>The folder path is an absolute path to the digitial carrier being transferred, such as <code class="language-plaintext highlighter-rouge">/Volumes/mounted-hard-drive</code> The MediaID is an ID created by NYPL to uniquely identify the carrier. It consists of the collection number, a dash, and a sequential number for the media in the collection, such as <code class="language-plaintext highlighter-rouge">M123456-0001</code>. Both of these inputs are required.</p> <p>Currently, <code class="language-plaintext highlighter-rouge">ft.sh</code> accepts inputs interactively. First, you run the script. Then, a prompt appears asking you for a file path. Then, another prompt appears asking you for a MediaID. Each of these steps contain a lot of help text.</p> <p>We’re going to change this behavior and have all user input happen as arguments to the first command, e.g. <code class="language-plaintext highlighter-rouge">filetransfer.py -arg1 /Volumes/mounted-hard-drive -arg2 M123456-0001</code> This will make it easier to further automate the command in the future since you don’t need to sit at the computer and wait for the prompt. We’re also going to require both pieces of input, and we’ll have a help interface to explain these features.</p> <p>So our requirements for the command-line interface are:</p> <ol> <li>Accept a Media ID and a carrier path</li> <li>Require both a Media ID and a carrier path to run</li> <li>Provide help text</li> </ol> <p>Before we build the code to accomplish this, we’ll build the tests to see if we were successful.</p> <h2 id="writing-tests-for-command-line-input"> <a href="#writing-tests-for-command-line-input" class="anchor-heading" aria-labelledby="writing-tests-for-command-line-input"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Writing Tests for Command Line Input </h2> <p>We need two things to test the command line interface for the script.</p> <ol> <li>A way to refer to the command-line portion of the script from our test script</li> <li>A way to for the test script to send command-line arguments</li> </ol> <h3 id="functions-and-testing"> <a href="#functions-and-testing" class="anchor-heading" aria-labelledby="functions-and-testing"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Functions and Testing </h3> <p>In order to refer to the command-line portion of the script, we need a name to refer to it. That’s one of the benefits of creating a function.</p> <p>The following examples of pseudo-code are roughly equal. A piece of data is processed by one function, <code class="language-plaintext highlighter-rouge">str</code>, and the result is processed by a second function, <code class="language-plaintext highlighter-rouge">parse</code>. The final result is stored to a variable called <code class="language-plaintext highlighter-rouge">result</code>.</p> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">variable</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">argument</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span>
 
-</code></pre></div></div>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">parse_args</span><span class="p">(</span><span class="n">argument</span><span class="p">):</span>
+</code></pre></div></div> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">parse_args</span><span class="p">(</span><span class="n">argument</span><span class="p">):</span>
   <span class="n">variable</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">argument</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
   <span class="n">result</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span>
   <span class="k">return</span> <span class="n">result</span>
 
-</code></pre></div></div>
-
-<p>The difference is that if we ever need to use that sequence of functions again, the second example let’s us call <code class="language-plaintext highlighter-rouge">function_name(argument)</code> instead of repeating the previous two lines.</p>
-
-<p>When it comes to testing, functions are critical, because they’re the only way that we can test that logic.
-The first example above is untestable.
-There is no easy way to tell our testing script to run two random lines of code.
-And even if we figured one out, we’d have to update that test every time the lines shifted around.
-Being able to call <code class="language-plaintext highlighter-rouge">script_name.function_name()</code> makes the code testable.</p>
-
-<p>Once our code has a name, we can write one or more tests to check the behavior of that code.
-As we improve the logic inside the function, we should have unit tests that check to make sure it performs the right actions.</p>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">test_parse_args</span><span class="p">():</span>
+</code></pre></div></div> <p>The difference is that if we ever need to use that sequence of functions again, the second example let’s us call <code class="language-plaintext highlighter-rouge">function_name(argument)</code> instead of repeating the previous two lines.</p> <p>When it comes to testing, functions are critical, because they’re the only way that we can test that logic. The first example above is untestable. There is no easy way to tell our testing script to run two random lines of code. And even if we figured one out, we’d have to update that test every time the lines shifted around. Being able to call <code class="language-plaintext highlighter-rouge">script_name.function_name()</code> makes the code testable.</p> <p>Once our code has a name, we can write one or more tests to check the behavior of that code. As we improve the logic inside the function, we should have unit tests that check to make sure it performs the right actions.</p> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">test_parse_args</span><span class="p">():</span>
   <span class="n">argument</span> <span class="o">=</span> <span class="s">'a known input'</span>
   <span class="n">result</span> <span class="o">=</span> <span class="n">script_name</span><span class="p">.</span><span class="n">function_name</span><span class="p">(</span><span class="n">argument</span><span class="p">)</span>
   <span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="s">'a known result'</span>
 
-</code></pre></div></div>
-
-<p>If we learn about a new function that runs faster, looks cleaner, or is somehow better than our current implementation, we can update our script and see if it still passes the test.</p>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">parse_args</span><span class="p">(</span><span class="n">argument</span><span class="p">):</span>
+</code></pre></div></div> <p>If we learn about a new function that runs faster, looks cleaner, or is somehow better than our current implementation, we can update our script and see if it still passes the test.</p> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">parse_args</span><span class="p">(</span><span class="n">argument</span><span class="p">):</span>
   <span class="n">result</span> <span class="o">=</span> <span class="n">a_better_way_we_just_found_out_about</span><span class="p">(</span><span class="n">argument</span><span class="p">)</span>
   <span class="k">return</span> <span class="n">result</span>
 
-</code></pre></div></div>
-
-<p>A more immediate benefit of functions is that they can help break down the logic of a program into discrete chunks.
-That gives a nice grouping for the data and functions used to accomplish a particular step.
-In this lesson, we’ll create a function for parsing command-line arguments.</p>
-
-<h3 id="mocking">Mocking</h3>
-
-<p>The second thing we need is a way for our test script to act like it’s receiving command-line arguments.
-It would be painful if we have to actual input our arguments during a test run.</p>
-
-<p>Having a test perform fake actions for the sake of testing some other functionality is called mocking.
-<code class="language-plaintext highlighter-rouge">pytest</code> has a specific version of mocking called <code class="language-plaintext highlighter-rouge">monkeypatch</code>.</p>
-
-<p>To use it, our test function needs to accept <code class="language-plaintext highlighter-rouge">monkeypatch</code> as input.
-Then we can use the attributes of <code class="language-plaintext highlighter-rouge">pytest</code>’s <code class="language-plaintext highlighter-rouge">monkeypatch</code> to fake command-line arguments, receiving data from a server, creating files, and other testing conditions.
-In Python, command-line arguments are represented by a list called <code class="language-plaintext highlighter-rouge">sys.argv</code>.
-Then for our command-line argument tests, we mock <code class="language-plaintext highlighter-rouge">sys.argv</code> with a potential command broken down into a list of strings.</p>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">test_parse_args</span><span class="p">(</span><span class="n">monkeypatch</span><span class="p">):</span>
+</code></pre></div></div> <p>A more immediate benefit of functions is that they can help break down the logic of a program into discrete chunks. That gives a nice grouping for the data and functions used to accomplish a particular step. In this lesson, we’ll create a function for parsing command-line arguments.</p> <h3 id="mocking"> <a href="#mocking" class="anchor-heading" aria-labelledby="mocking"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Mocking </h3> <p>The second thing we need is a way for our test script to act like it’s receiving command-line arguments. It would be painful if we have to actual input our arguments during a test run.</p> <p>Having a test perform fake actions for the sake of testing some other functionality is called mocking. <code class="language-plaintext highlighter-rouge">pytest</code> has a specific version of mocking called <code class="language-plaintext highlighter-rouge">monkeypatch</code>.</p> <p>To use it, our test function needs to accept <code class="language-plaintext highlighter-rouge">monkeypatch</code> as input. Then we can use the attributes of <code class="language-plaintext highlighter-rouge">pytest</code>’s <code class="language-plaintext highlighter-rouge">monkeypatch</code> to fake command-line arguments, receiving data from a server, creating files, and other testing conditions. In Python, command-line arguments are represented by a list called <code class="language-plaintext highlighter-rouge">sys.argv</code>. Then for our command-line argument tests, we mock <code class="language-plaintext highlighter-rouge">sys.argv</code> with a potential command broken down into a list of strings.</p> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">test_parse_args</span><span class="p">(</span><span class="n">monkeypatch</span><span class="p">):</span>
   <span class="n">monkeypatch</span><span class="p">.</span><span class="nb">setattr</span><span class="p">(</span><span class="s">'sys.argv'</span><span class="p">,</span> <span class="p">[</span><span class="s">'filetransfer.py'</span><span class="p">,</span> <span class="s">'arg1'</span><span class="p">,</span> <span class="s">'arg2'</span><span class="p">])</span>
   <span class="n">args</span> <span class="o">=</span> <span class="n">filetransfer</span><span class="p">.</span><span class="n">parse_args</span><span class="p">()</span>
   <span class="k">assert</span> <span class="n">arg1</span> <span class="ow">in</span> <span class="n">args</span>
   <span class="k">assert</span> <span class="n">arg2</span> <span class="ow">in</span> <span class="n">args</span>
 
-</code></pre></div></div>
-
-<p>There is some magic happening here that is easier to accept on faith.
-<code class="language-plaintext highlighter-rouge">sys.argv</code> is how Python parses terminal inputs.
-Those inputs are separated into a list by space characters, e.g. <code class="language-plaintext highlighter-rouge">filetransfer.py arg1 arg2</code> becomes <code class="language-plaintext highlighter-rouge">['filetransfer.py', 'arg1', 'arg2']</code>
-The <code class="language-plaintext highlighter-rouge">parse_args</code> method should by default parse terminal defaults.
-It’s worth investigating this magic as you get deeper into CLIs, but we’ll get back to our task for now.</p>
-
-<h2 id="writing-cli-tests-for-filetransferpy">Writing CLI Tests for <code class="language-plaintext highlighter-rouge">filetransfer.py</code></h2>
-
-<p>Back to the <code class="language-plaintext highlighter-rouge">test_filetransfer.py</code> script, which looked like this.</p>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">filetransfer</span>
+</code></pre></div></div> <p>There is some magic happening here that is easier to accept on faith. <code class="language-plaintext highlighter-rouge">sys.argv</code> is how Python parses terminal inputs. Those inputs are separated into a list by space characters, e.g. <code class="language-plaintext highlighter-rouge">filetransfer.py arg1 arg2</code> becomes <code class="language-plaintext highlighter-rouge">['filetransfer.py', 'arg1', 'arg2']</code> The <code class="language-plaintext highlighter-rouge">parse_args</code> method should by default parse terminal defaults. It’s worth investigating this magic as you get deeper into CLIs, but we’ll get back to our task for now.</p> <h2 id="writing-cli-tests-for-filetransferpy"> <a href="#writing-cli-tests-for-filetransferpy" class="anchor-heading" aria-labelledby="writing-cli-tests-for-filetransferpy"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Writing CLI Tests for <code class="language-plaintext highlighter-rouge">filetransfer.py</code> </h2> <p>Back to the <code class="language-plaintext highlighter-rouge">test_filetransfer.py</code> script, which looked like this.</p> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">filetransfer</span>
 <span class="kn">import</span> <span class="nn">pathlib</span>
 
 <span class="k">def</span> <span class="nf">test_completedtransfer</span><span class="p">():</span>
     <span class="n">filetransfer</span><span class="p">.</span><span class="n">main</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">pathlib</span><span class="p">.</span><span class="n">Path</span><span class="p">(</span><span class="s">'/path/to/destination'</span><span class="p">).</span><span class="n">exists</span><span class="p">()</span>
-</code></pre></div></div>
-
-<p>First we’ll add some comments to keep things organized.
-Over time, we’ll add additional tests.
-It will be easier to read all the tests if they are grouped by purpose</p>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">filetransfer</span>
+</code></pre></div></div> <p>First we’ll add some comments to keep things organized. Over time, we’ll add additional tests. It will be easier to read all the tests if they are grouped by purpose</p> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">filetransfer</span>
 <span class="kn">import</span> <span class="nn">pathlib</span>
 <span class="kn">import</span> <span class="nn">pytest</span>
 
@@ -153,33 +40,7 @@ It will be easier to read all the tests if they are grouped by purpose</p>
 
 <span class="c1"># unit tests
 # command line tests
-</span></code></pre></div></div>
-
-<p>Our CLI should do 3 things.</p>
-
-<ol>
-  <li>Accept a Media ID and a carrier path</li>
-  <li>Require both a Media ID and a carrier path to run</li>
-  <li>Provide help text</li>
-</ol>
-
-<p>The loop for writing these tests will be.</p>
-
-<ol>
-  <li>Write the test</li>
-  <li>Run the test script to make sure it generates a fail and not an error.</li>
-  <li>Correct any bugs in the test, in case of an error</li>
-  <li>Add and commit the test in version control</li>
-</ol>
-
-<h3 id="test-for-accepting-arguments">Test for accepting arguments</h3>
-
-<p>This test brings up one of the hardest tasks in programming, naming things.
-We want argument names that are both descriptive but not annoyingly long to type out.
-For now, let’s say that the argument name for the media id should be <code class="language-plaintext highlighter-rouge">--id</code> and for the path should be <code class="language-plaintext highlighter-rouge">--source</code>.
-A run of this script would be <code class="language-plaintext highlighter-rouge">python filetransfer.py python filetransfer.py --source path/to/source --id M12345-0001</code>.</p>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># unit tests
+</span></code></pre></div></div> <p>Our CLI should do 3 things.</p> <ol> <li>Accept a Media ID and a carrier path</li> <li>Require both a Media ID and a carrier path to run</li> <li>Provide help text</li> </ol> <p>The loop for writing these tests will be.</p> <ol> <li>Write the test</li> <li>Run the test script to make sure it generates a fail and not an error.</li> <li>Correct any bugs in the test, in case of an error</li> <li>Add and commit the test in version control</li> </ol> <h3 id="test-for-accepting-arguments"> <a href="#test-for-accepting-arguments" class="anchor-heading" aria-labelledby="test-for-accepting-arguments"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Test for accepting arguments </h3> <p>This test brings up one of the hardest tasks in programming, naming things. We want argument names that are both descriptive but not annoyingly long to type out. For now, let’s say that the argument name for the media id should be <code class="language-plaintext highlighter-rouge">--id</code> and for the path should be <code class="language-plaintext highlighter-rouge">--source</code>. A run of this script would be <code class="language-plaintext highlighter-rouge">python filetransfer.py python filetransfer.py --source path/to/source --id M12345-0001</code>.</p> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># unit tests
 # command line tests
 </span>
 <span class="k">def</span> <span class="nf">test_required_args</span><span class="p">(</span><span class="n">monkeypatch</span><span class="p">):</span>
@@ -187,26 +48,7 @@ A run of this script would be <code class="language-plaintext highlighter-rouge"
   <span class="n">args</span> <span class="o">=</span> <span class="n">filetransfer</span><span class="p">.</span><span class="n">parse_args</span><span class="p">()</span>
   <span class="k">assert</span> <span class="n">args</span><span class="p">.</span><span class="n">source</span> <span class="o">==</span> <span class="s">'path/to/source'</span>
   <span class="k">assert</span> <span class="n">args</span><span class="p">.</span><span class="nb">id</span> <span class="o">==</span> <span class="s">'M12345-0001'</span>
-</code></pre></div></div>
-
-<p><code class="language-plaintext highlighter-rouge">args</code> is a fairly common abbreviation for arguments.
-The <code class="language-plaintext highlighter-rouge">args.argument_name</code> syntax is also a common method to handle command-line arguments, based partially on the module we’ll use to do the parsing.</p>
-
-<h3 id="require-both-arguments">Require both arguments</h3>
-
-<p>Our CLI should also give feedback if a user forgets to include an argument or has a typo in their argument.
-To mock this, we’ll act like the user only ran <code class="language-plaintext highlighter-rouge">python filetransfer.py</code>.
-In this situation, we want the script to immediately exit and report that both the <code class="language-plaintext highlighter-rouge">source</code> argument and the <code class="language-plaintext highlighter-rouge">id</code> argument are missing.</p>
-
-<p>When a tested Python function exits, the function doing the testing also exits.
-In order to examine and test the behavior during the exit, we have to run the tested function in a special context that does not cause the testing function to exit.
-In <code class="language-plaintext highlighter-rouge">pytest</code>, this is done using a <code class="language-plaintext highlighter-rouge">with pytest.raises(SystemExit):</code> block.
-We also need something that captures the error reporting.
-In <code class="language-plaintext highlighter-rouge">pytest</code>, this is done by adding <code class="language-plaintext highlighter-rouge">capsys</code> to the input of the testing function and then parsing what it captures.</p>
-
-<p>After <code class="language-plaintext highlighter-rouge">test_parse_args()</code>:</p>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">test_missing_args</span><span class="p">(</span><span class="n">capsys</span><span class="p">,</span> <span class="n">monkeypatch</span><span class="p">):</span>
+</code></pre></div></div> <p><code class="language-plaintext highlighter-rouge">args</code> is a fairly common abbreviation for arguments. The <code class="language-plaintext highlighter-rouge">args.argument_name</code> syntax is also a common method to handle command-line arguments, based partially on the module we’ll use to do the parsing.</p> <h3 id="require-both-arguments"> <a href="#require-both-arguments" class="anchor-heading" aria-labelledby="require-both-arguments"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Require both arguments </h3> <p>Our CLI should also give feedback if a user forgets to include an argument or has a typo in their argument. To mock this, we’ll act like the user only ran <code class="language-plaintext highlighter-rouge">python filetransfer.py</code>. In this situation, we want the script to immediately exit and report that both the <code class="language-plaintext highlighter-rouge">source</code> argument and the <code class="language-plaintext highlighter-rouge">id</code> argument are missing.</p> <p>When a tested Python function exits, the function doing the testing also exits. In order to examine and test the behavior during the exit, we have to run the tested function in a special context that does not cause the testing function to exit. In <code class="language-plaintext highlighter-rouge">pytest</code>, this is done using a <code class="language-plaintext highlighter-rouge">with pytest.raises(SystemExit):</code> block. We also need something that captures the error reporting. In <code class="language-plaintext highlighter-rouge">pytest</code>, this is done by adding <code class="language-plaintext highlighter-rouge">capsys</code> to the input of the testing function and then parsing what it captures.</p> <p>After <code class="language-plaintext highlighter-rouge">test_parse_args()</code>:</p> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">test_missing_args</span><span class="p">(</span><span class="n">capsys</span><span class="p">,</span> <span class="n">monkeypatch</span><span class="p">):</span>
   <span class="n">monkeypatch</span><span class="p">.</span><span class="nb">setattr</span><span class="p">(</span><span class="s">'sys.argv'</span><span class="p">,</span> <span class="p">[</span><span class="s">'filetransfer.py'</span><span class="p">])</span>
 
   <span class="k">with</span> <span class="n">pytest</span><span class="p">.</span><span class="n">raises</span><span class="p">(</span><span class="nb">SystemExit</span><span class="p">):</span>
@@ -217,17 +59,7 @@ In <code class="language-plaintext highlighter-rouge">pytest</code>, this is don
   <span class="k">assert</span> <span class="s">'error: the following arguments are required'</span> <span class="ow">in</span> <span class="n">stderr</span>
   <span class="k">assert</span> <span class="s">'id'</span> <span class="ow">in</span> <span class="n">stderr</span>
   <span class="k">assert</span> <span class="s">'source'</span> <span class="ow">in</span> <span class="n">stderr</span>
-</code></pre></div></div>
-
-<h3 id="provide-help-text">Provide help text</h3>
-
-<p>Finally, it would be good for the script to have a help argument that explains what the script does.
-This case will transfer files from a carrier into a bag, so let’s have the script say that it does that.</p>
-
-<p>The script will exit immediately after printing the help information, so a <code class="language-plaintext highlighter-rouge">with</code> block is needed.
-Because the help text is sent to standard oupout instead of standard error, we parse <code class="language-plaintext highlighter-rouge">capsys.readouterr().out</code></p>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">test_cli_help</span><span class="p">(</span><span class="n">capsys</span><span class="p">,</span> <span class="n">monkeypatch</span><span class="p">):</span>
+</code></pre></div></div> <h3 id="provide-help-text"> <a href="#provide-help-text" class="anchor-heading" aria-labelledby="provide-help-text"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Provide help text </h3> <p>Finally, it would be good for the script to have a help argument that explains what the script does. This case will transfer files from a carrier into a bag, so let’s have the script say that it does that.</p> <p>The script will exit immediately after printing the help information, so a <code class="language-plaintext highlighter-rouge">with</code> block is needed. Because the help text is sent to standard oupout instead of standard error, we parse <code class="language-plaintext highlighter-rouge">capsys.readouterr().out</code></p> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">test_cli_help</span><span class="p">(</span><span class="n">capsys</span><span class="p">,</span> <span class="n">monkeypatch</span><span class="p">):</span>
   <span class="n">monkeypatch</span><span class="p">.</span><span class="nb">setattr</span><span class="p">(</span><span class="s">'sys.argv'</span><span class="p">,</span> <span class="p">[</span><span class="s">'filetransfer.py'</span><span class="p">,</span> <span class="s">'-h'</span><span class="p">])</span>
 
   <span class="k">with</span> <span class="n">pytest</span><span class="p">.</span><span class="n">raises</span><span class="p">(</span><span class="nb">SystemExit</span><span class="p">):</span>
@@ -236,98 +68,21 @@ Because the help text is sent to standard oupout instead of standard error, we p
   <span class="n">stdout</span> <span class="o">=</span> <span class="n">capsys</span><span class="p">.</span><span class="n">readouterr</span><span class="p">().</span><span class="n">out</span>
 
   <span class="k">assert</span> <span class="s">'transfer files from a carrier into a bag'</span> <span class="ow">in</span> <span class="n">stdout</span>
-</code></pre></div></div>
-
-<h3 id="cli-testing-summary">CLI Testing Summary</h3>
-
-<p>The test script should now have 3 new testing functions.
-These aren’t perfect test.
-You might want to add additional assertions for what the help should look like.
-Or you could test what happens when you provide just one of the required arguments.
-However, they are a good start for any CLI testing you want to do.</p>
-
-<p>If you don’t fully understand <code class="language-plaintext highlighter-rouge">monkeypatch</code>, <code class="language-plaintext highlighter-rouge">capsys</code>, <code class="language-plaintext highlighter-rouge">SystemExit</code>, or other <code class="language-plaintext highlighter-rouge">pytest</code> features that were introduced, treat these three testing functions as a template to build from until you’re more comfortable with <code class="language-plaintext highlighter-rouge">pytest</code></p>
-
-<p>For now, we can return to writing the script itself.</p>
-
-<h2 id="writing-the-cli-for-filetransferpy">Writing the CLI for <code class="language-plaintext highlighter-rouge">filetransfer.py</code></h2>
-
-<p>First, let’s run the tests.
-In a terminal in the the working directory of your script files, run the following.</p>
-
-<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pytest
-</code></pre></div></div>
-
-<p>You should see a report of <code class="language-plaintext highlighter-rouge">3 failed, 1 passed</code>.
-The summaries for the failed tests, should look similar to the last lesson.
-<code class="language-plaintext highlighter-rouge">module 'filetransfer' has no attribute 'parse_args'</code></p>
-
-<p>We can fix that issue pretty quickly by adding a new function to <code class="language-plaintext highlighter-rouge">filetransfer.py</code></p>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">parse_args</span><span class="p">():</span>
+</code></pre></div></div> <h3 id="cli-testing-summary"> <a href="#cli-testing-summary" class="anchor-heading" aria-labelledby="cli-testing-summary"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> CLI Testing Summary </h3> <p>The test script should now have 3 new testing functions. These aren’t perfect test. You might want to add additional assertions for what the help should look like. Or you could test what happens when you provide just one of the required arguments. However, they are a good start for any CLI testing you want to do.</p> <p>If you don’t fully understand <code class="language-plaintext highlighter-rouge">monkeypatch</code>, <code class="language-plaintext highlighter-rouge">capsys</code>, <code class="language-plaintext highlighter-rouge">SystemExit</code>, or other <code class="language-plaintext highlighter-rouge">pytest</code> features that were introduced, treat these three testing functions as a template to build from until you’re more comfortable with <code class="language-plaintext highlighter-rouge">pytest</code></p> <p>For now, we can return to writing the script itself.</p> <h2 id="writing-the-cli-for-filetransferpy"> <a href="#writing-the-cli-for-filetransferpy" class="anchor-heading" aria-labelledby="writing-the-cli-for-filetransferpy"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Writing the CLI for <code class="language-plaintext highlighter-rouge">filetransfer.py</code> </h2> <p>First, let’s run the tests. In a terminal in the the working directory of your script files, run the following.</p> <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pytest
+</code></pre></div></div> <p>You should see a report of <code class="language-plaintext highlighter-rouge">3 failed, 1 passed</code>. The summaries for the failed tests, should look similar to the last lesson. <code class="language-plaintext highlighter-rouge">module 'filetransfer' has no attribute 'parse_args'</code></p> <p>We can fix that issue pretty quickly by adding a new function to <code class="language-plaintext highlighter-rouge">filetransfer.py</code></p> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">parse_args</span><span class="p">():</span>
     <span class="k">return</span>
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="k">return</span>
-</code></pre></div></div>
-
-<p>Running <code class="language-plaintext highlighter-rouge">pytest</code> in the terminal again no yields more specific errors.</p>
-
-<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FAILED test_python.py::test_required_args - AttributeError: <span class="s1">'NoneType'</span> object has no attribute <span class="s1">'source'</span>
+</code></pre></div></div> <p>Running <code class="language-plaintext highlighter-rouge">pytest</code> in the terminal again no yields more specific errors.</p> <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FAILED test_python.py::test_required_args - AttributeError: <span class="s1">'NoneType'</span> object has no attribute <span class="s1">'source'</span>
 FAILED test_python.py::test_missing_args - Failed: DID NOT RAISE &lt;class <span class="s1">'SystemExit'</span><span class="o">&gt;</span>
 FAILED test_python.py::test_cli_help - Failed: DID NOT RAISE &lt;class <span class="s1">'SystemExit'</span><span class="o">&gt;</span>
-</code></pre></div></div>
-
-<p>This says that our script does not:</p>
-
-<ol>
-  <li>successfully parse command line arguments</li>
-  <li>successfully exit when it does not receive required arguments</li>
-  <li>successfully exit when it receives an argument to print help</li>
-</ol>
-
-<p>We’ll fix these one-by-one using the <code class="language-plaintext highlighter-rouge">argparse</code> module, Python’s built-in module for building command-line interfaces.</p>
-
-<h3 id="adding-argparse-and-parsing-arguments">Adding <code class="language-plaintext highlighter-rouge">argparse</code> and parsing arguments</h3>
-
-<p>To access the functions of <code class="language-plaintext highlighter-rouge">argparse</code>, we need to import it into the script.</p>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">argparse</span>
+</code></pre></div></div> <p>This says that our script does not:</p> <ol> <li>successfully parse command line arguments</li> <li>successfully exit when it does not receive required arguments</li> <li>successfully exit when it receives an argument to print help</li> </ol> <p>We’ll fix these one-by-one using the <code class="language-plaintext highlighter-rouge">argparse</code> module, Python’s built-in module for building command-line interfaces.</p> <h3 id="adding-argparse-and-parsing-arguments"> <a href="#adding-argparse-and-parsing-arguments" class="anchor-heading" aria-labelledby="adding-argparse-and-parsing-arguments"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Adding <code class="language-plaintext highlighter-rouge">argparse</code> and parsing arguments </h3> <p>To access the functions of <code class="language-plaintext highlighter-rouge">argparse</code>, we need to import it into the script.</p> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">argparse</span>
 
 <span class="k">def</span> <span class="nf">parse_args</span><span class="p">():</span>
     <span class="k">return</span>
 <span class="p">...</span>
-</code></pre></div></div>
-
-<p>To learn how to use it, or any Python module, it’s helpful to head to the module’s documentation.
-The <a href="https://docs.python.org/3/library/argparse.html">documentation for argparse</a> follows a standard documentation structure used for most other standard library modules.</p>
-
-<p>First, there is a minimal working example using good stylistic practice.
-You can copy paste this code yourself to test it out.</p>
-
-<p>Next, major concepts of the module are explained and illustrated with examples.
-These concepts are typically arranged in order of common usage.
-For <code class="language-plaintext highlighter-rouge">argparse</code>, the concepts are:</p>
-
-<ul>
-  <li>the <code class="language-plaintext highlighter-rouge">ArgumentParser</code> object</li>
-  <li>the <code class="language-plaintext highlighter-rouge">add_argument()</code> method</li>
-  <li>the <code class="language-plaintext highlighter-rouge">parse_args()</code> method</li>
-  <li>other tools in the module</li>
-</ul>
-
-<p>This type of documentation is often not read from start to finish, but skimmed and referenced as needed.
-Using <code class="language-plaintext highlighter-rouge">cmd+f</code> to jump to other portions of the page is frequently helpful.</p>
-
-<p>For our script, we will need to:</p>
-
-<ol>
-  <li>create an instance of the <code class="language-plaintext highlighter-rouge">ArgumentParser</code> object</li>
-  <li>define arguments for <code class="language-plaintext highlighter-rouge">source</code> and <code class="language-plaintext highlighter-rouge">id</code></li>
-  <li>parse the arguments before returning it</li>
-</ol>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">argparse</span>
+</code></pre></div></div> <p>To learn how to use it, or any Python module, it’s helpful to head to the module’s documentation. The <a href="https://docs.python.org/3/library/argparse.html">documentation for argparse</a> follows a standard documentation structure used for most other standard library modules.</p> <p>First, there is a minimal working example using good stylistic practice. You can copy paste this code yourself to test it out.</p> <p>Next, major concepts of the module are explained and illustrated with examples. These concepts are typically arranged in order of common usage. For <code class="language-plaintext highlighter-rouge">argparse</code>, the concepts are:</p> <ul> <li>the <code class="language-plaintext highlighter-rouge">ArgumentParser</code> object</li> <li>the <code class="language-plaintext highlighter-rouge">add_argument()</code> method</li> <li>the <code class="language-plaintext highlighter-rouge">parse_args()</code> method</li> <li>other tools in the module</li> </ul> <p>This type of documentation is often not read from start to finish, but skimmed and referenced as needed. Using <code class="language-plaintext highlighter-rouge">cmd+f</code> to jump to other portions of the page is frequently helpful.</p> <p>For our script, we will need to:</p> <ol> <li>create an instance of the <code class="language-plaintext highlighter-rouge">ArgumentParser</code> object</li> <li>define arguments for <code class="language-plaintext highlighter-rouge">source</code> and <code class="language-plaintext highlighter-rouge">id</code></li> <li>parse the arguments before returning it</li> </ol> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">argparse</span>
 
 <span class="k">def</span> <span class="nf">parse_args</span><span class="p">():</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="p">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
@@ -335,30 +90,7 @@ Using <code class="language-plaintext highlighter-rouge">cmd+f</code> to jump to
     <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">'--id'</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">parser</span><span class="p">.</span><span class="n">parse_args</span><span class="p">()</span>
 
-</code></pre></div></div>
-
-<p>Because <code class="language-plaintext highlighter-rouge">parser</code> is an instance of the <code class="language-plaintext highlighter-rouge">ArgumentParser</code> class, it has all of the methods of the class, including <code class="language-plaintext highlighter-rouge">add_argument()</code>.
-That method allows us to define how the <code class="language-plaintext highlighter-rouge">parser</code> should interpret command-line arguments.
-For example, <code class="language-plaintext highlighter-rouge">parser.add_argument('--source')</code> makes it possible to run a command like <code class="language-plaintext highlighter-rouge">python filetransfer.py --source path/to/source</code> and argparse will associate the flag <code class="language-plaintext highlighter-rouge">--source</code> with the input <code class="language-plaintext highlighter-rouge">path/to/source</code>.
-We can add further inputs to an <code class="language-plaintext highlighter-rouge">add_argument</code> in order to add optional names, required data types, help text, or other features.</p>
-
-<p>Finally, <code class="language-plaintext highlighter-rouge">parser.parse_args</code> actually performs the work of interpreting arguments received by the script into data that the rest of the script can use.
-In general, each argument created in the parser is produced as an attribute of the object returned by <code class="language-plaintext highlighter-rouge">parse_args</code>, e.g. <code class="language-plaintext highlighter-rouge">--source</code> is referenced as <code class="language-plaintext highlighter-rouge">.source</code>.
-We’re coopting the name of <code class="language-plaintext highlighter-rouge">parse_args</code> in order to communicate that the results of our function are the results of a <code class="language-plaintext highlighter-rouge">argparse.ArgumentParser.parse_args()</code> method.</p>
-
-<p>Back to the terminal to run <code class="language-plaintext highlighter-rouge">pytest</code> and out test results should now be <code class="language-plaintext highlighter-rouge">2 failed, 2 passed</code>.</p>
-
-<h3 id="requiring-arguments">Requiring arguments</h3>
-
-<p>The missing argument test is still failing.
-Just because our script can parse something like <code class="language-plaintext highlighter-rouge">python filetransfer.py --source path/to/source</code>, doesn’t mean that it will exit if we forget that argument, mistype, or have another issue.
-To make these non-optional, we need to put further conditions on <code class="language-plaintext highlighter-rouge">add_argument</code></p>
-
-<p>Because making arguments required is very common, <code class="language-plaintext highlighter-rouge">add_argument</code> has its own argument for it, <code class="language-plaintext highlighter-rouge">required</code>.
-According to the docs, <code class="language-plaintext highlighter-rouge">required</code> is set to <code class="language-plaintext highlighter-rouge">False</code> by default.
-If we want an argument to be required, we need to set it to <code class="language-plaintext highlighter-rouge">True</code> when we define the argument.</p>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">argparse</span>
+</code></pre></div></div> <p>Because <code class="language-plaintext highlighter-rouge">parser</code> is an instance of the <code class="language-plaintext highlighter-rouge">ArgumentParser</code> class, it has all of the methods of the class, including <code class="language-plaintext highlighter-rouge">add_argument()</code>. That method allows us to define how the <code class="language-plaintext highlighter-rouge">parser</code> should interpret command-line arguments. For example, <code class="language-plaintext highlighter-rouge">parser.add_argument('--source')</code> makes it possible to run a command like <code class="language-plaintext highlighter-rouge">python filetransfer.py --source path/to/source</code> and argparse will associate the flag <code class="language-plaintext highlighter-rouge">--source</code> with the input <code class="language-plaintext highlighter-rouge">path/to/source</code>. We can add further inputs to an <code class="language-plaintext highlighter-rouge">add_argument</code> in order to add optional names, required data types, help text, or other features.</p> <p>Finally, <code class="language-plaintext highlighter-rouge">parser.parse_args</code> actually performs the work of interpreting arguments received by the script into data that the rest of the script can use. In general, each argument created in the parser is produced as an attribute of the object returned by <code class="language-plaintext highlighter-rouge">parse_args</code>, e.g. <code class="language-plaintext highlighter-rouge">--source</code> is referenced as <code class="language-plaintext highlighter-rouge">.source</code>. We’re coopting the name of <code class="language-plaintext highlighter-rouge">parse_args</code> in order to communicate that the results of our function are the results of a <code class="language-plaintext highlighter-rouge">argparse.ArgumentParser.parse_args()</code> method.</p> <p>Back to the terminal to run <code class="language-plaintext highlighter-rouge">pytest</code> and out test results should now be <code class="language-plaintext highlighter-rouge">2 failed, 2 passed</code>.</p> <h3 id="requiring-arguments"> <a href="#requiring-arguments" class="anchor-heading" aria-labelledby="requiring-arguments"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Requiring arguments </h3> <p>The missing argument test is still failing. Just because our script can parse something like <code class="language-plaintext highlighter-rouge">python filetransfer.py --source path/to/source</code>, doesn’t mean that it will exit if we forget that argument, mistype, or have another issue. To make these non-optional, we need to put further conditions on <code class="language-plaintext highlighter-rouge">add_argument</code></p> <p>Because making arguments required is very common, <code class="language-plaintext highlighter-rouge">add_argument</code> has its own argument for it, <code class="language-plaintext highlighter-rouge">required</code>. According to the docs, <code class="language-plaintext highlighter-rouge">required</code> is set to <code class="language-plaintext highlighter-rouge">False</code> by default. If we want an argument to be required, we need to set it to <code class="language-plaintext highlighter-rouge">True</code> when we define the argument.</p> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">argparse</span>
 
 <span class="k">def</span> <span class="nf">parse_args</span><span class="p">():</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="p">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
@@ -366,17 +98,7 @@ If we want an argument to be required, we need to set it to <code class="languag
     <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">'--id'</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">parser</span><span class="p">.</span><span class="n">parse_args</span><span class="p">()</span>
 
-</code></pre></div></div>
-
-<p>Back to the terminal to run <code class="language-plaintext highlighter-rouge">pytest</code> and out test results should now be <code class="language-plaintext highlighter-rouge">1 failed, 3 passed</code>.</p>
-
-<h3 id="adding-a-help-function">Adding a help function</h3>
-
-<p>Finally, argparse comes with a built-in help argument.
-Running the script with a <code class="language-plaintext highlighter-rouge">-h</code> will print out all of the configuration options chosen for the parser.
-To add a description of the entire script to the help output requires a change to the initial <code class="language-plaintext highlighter-rouge">ArgumentParser</code> call.</p>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">argparse</span>
+</code></pre></div></div> <p>Back to the terminal to run <code class="language-plaintext highlighter-rouge">pytest</code> and out test results should now be <code class="language-plaintext highlighter-rouge">1 failed, 3 passed</code>.</p> <h3 id="adding-a-help-function"> <a href="#adding-a-help-function" class="anchor-heading" aria-labelledby="adding-a-help-function"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Adding a help function </h3> <p>Finally, argparse comes with a built-in help argument. Running the script with a <code class="language-plaintext highlighter-rouge">-h</code> will print out all of the configuration options chosen for the parser. To add a description of the entire script to the help output requires a change to the initial <code class="language-plaintext highlighter-rouge">ArgumentParser</code> call.</p> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">argparse</span>
 
 <span class="k">def</span> <span class="nf">parse_args</span><span class="p">():</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="p">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s">'transfer files from a carrier into a bag'</span><span class="p">)</span>
@@ -384,40 +106,12 @@ To add a description of the entire script to the help output requires a change t
     <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">'--id'</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">parser</span><span class="p">.</span><span class="n">parse_args</span><span class="p">()</span>
 
-</code></pre></div></div>
-
-<p>Back to the terminal to run <code class="language-plaintext highlighter-rouge">pytest</code> and out test results should now be <code class="language-plaintext highlighter-rouge">4 passed</code>.</p>
-
-<h2 id="going-further">Going further</h2>
-
-<p>This is a basic setup for using <code class="language-plaintext highlighter-rouge">argparse</code>.
-There a plenty of additional features we could use.
-For example, every argument can have its own help text.</p>
-
-<p>Note: as you increase the number of arguments, it becomes harder to read a function call.
-You can break the arguments over several lines to improve legibility.
-To do so, create a new line after either a parenthesis or a comma and start the new line one tab in from the function.</p>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span>
+</code></pre></div></div> <p>Back to the terminal to run <code class="language-plaintext highlighter-rouge">pytest</code> and out test results should now be <code class="language-plaintext highlighter-rouge">4 passed</code>.</p> <h2 id="going-further"> <a href="#going-further" class="anchor-heading" aria-labelledby="going-further"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Going further </h2> <p>This is a basic setup for using <code class="language-plaintext highlighter-rouge">argparse</code>. There a plenty of additional features we could use. For example, every argument can have its own help text.</p> <p>Note: as you increase the number of arguments, it becomes harder to read a function call. You can break the arguments over several lines to improve legibility. To do so, create a new line after either a parenthesis or a comma and start the new line one tab in from the function.</p> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span>
     <span class="s">'--id'</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s">'Media ID in the form of M#####-####'</span>
     <span class="n">required</span><span class="o">=</span><span class="bp">True</span>
 <span class="p">)</span>
-</code></pre></div></div>
-
-<p>We could have a requirement that every argument has specific help text, then write test for that help text, and finally implement that help text.
-However, we could also choose to just implement the help text.
-Everyone has their own opinions about what features require testing.</p>
-
-<h3 id="better-argument-validation">Better argument validation</h3>
-
-<p>We could get more exact about our requirement though.
-What if someone entered an incorrect Media ID, like N12345-0001, M12345_0002, or M12345-000q?
-It would be good for the script to report and error and exit.</p>
-
-<p>Let’s write a test for that.</p>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">test_bad_id</span><span class="p">(</span><span class="n">monkeypatch</span><span class="p">):</span>
+</code></pre></div></div> <p>We could have a requirement that every argument has specific help text, then write test for that help text, and finally implement that help text. However, we could also choose to just implement the help text. Everyone has their own opinions about what features require testing.</p> <h3 id="better-argument-validation"> <a href="#better-argument-validation" class="anchor-heading" aria-labelledby="better-argument-validation"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Better argument validation </h3> <p>We could get more exact about our requirement though. What if someone entered an incorrect Media ID, like N12345-0001, M12345_0002, or M12345-000q? It would be good for the script to report and error and exit.</p> <p>Let’s write a test for that.</p> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">test_bad_id</span><span class="p">(</span><span class="n">monkeypatch</span><span class="p">):</span>
   <span class="n">bad_id</span> <span class="o">=</span><span class="s">'N12345-0001'</span>
   <span class="n">monkeypatch</span><span class="p">.</span><span class="nb">setattr</span><span class="p">(</span><span class="s">'sys.argv'</span><span class="p">,</span> <span class="p">[</span><span class="s">'filetransfer.py'</span><span class="p">,</span> <span class="s">'--source'</span><span class="p">,</span> <span class="s">'path/to/source'</span><span class="p">,</span> <span class="s">'--id'</span><span class="p">,</span> <span class="n">bad_id</span><span class="p">])</span>
 
@@ -427,31 +121,11 @@ It would be good for the script to report and error and exit.</p>
   <span class="n">stderr</span> <span class="o">=</span> <span class="n">capsys</span><span class="p">.</span><span class="n">readouterr</span><span class="p">().</span><span class="n">err</span>
 
   <span class="k">assert</span> <span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">bad_id</span><span class="si">}</span><span class="s"> does not match the required Media ID format of M#####-####'</span> <span class="ow">in</span> <span class="n">stderr</span>
-</code></pre></div></div>
-
-<p>Running <code class="language-plaintext highlighter-rouge">pytest</code> should result in 1 failed test.</p>
-
-<p>To validate input, we can use the <code class="language-plaintext highlighter-rouge">add_argument</code> <code class="language-plaintext highlighter-rouge">type</code> argument.
-At its most direct level you can require input to be a specific data type like <code class="language-plaintext highlighter-rouge">str</code> or <code class="language-plaintext highlighter-rouge">int</code>.
-But, you can also create function to validate custom types.
-The pattern for the validation function will be</p>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">valid_</span><span class="p">...(</span><span class="nb">input</span><span class="p">):</span>
+</code></pre></div></div> <p>Running <code class="language-plaintext highlighter-rouge">pytest</code> should result in 1 failed test.</p> <p>To validate input, we can use the <code class="language-plaintext highlighter-rouge">add_argument</code> <code class="language-plaintext highlighter-rouge">type</code> argument. At its most direct level you can require input to be a specific data type like <code class="language-plaintext highlighter-rouge">str</code> or <code class="language-plaintext highlighter-rouge">int</code>. But, you can also create function to validate custom types. The pattern for the validation function will be</p> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">valid_</span><span class="p">...(</span><span class="nb">input</span><span class="p">):</span>
     <span class="c1"># if the input isn't valid
 </span>        <span class="c1"># raise an exception
 </span>    <span class="c1"># return the input
-</span></code></pre></div></div>
-
-<p>For the Media ID, the NYPL pattern is start with M, then 4 to 6 numbers, then a dash, and then end with 4 numbers.
-We can express this more succinctly as a regular expression, <code class="language-plaintext highlighter-rouge">M\d{4,6}-\d{4}</code>.
-So we’ll import the <code class="language-plaintext highlighter-rouge">re</code> module into our script, in order to use <code class="language-plaintext highlighter-rouge">re.match(r'M\d{4,6}-\d{4}', id)</code>.</p>
-
-<p>Because this function will only be used within the argument parser, we define it inside of <code class="language-plaintext highlighter-rouge">parse_args</code>.
-(It may seem strange, but yes, you can define functions in functions.)</p>
-
-<p>Finally, we reference the validator from <code class="language-plaintext highlighter-rouge">add_argument</code> with <code class="language-plaintext highlighter-rouge">type=valid_id</code> (note that it doesn’t have parentheses).</p>
-
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">argparse</span>
+</span></code></pre></div></div> <p>For the Media ID, the NYPL pattern is start with M, then 4 to 6 numbers, then a dash, and then end with 4 numbers. We can express this more succinctly as a regular expression, <code class="language-plaintext highlighter-rouge">M\d{4,6}-\d{4}</code>. So we’ll import the <code class="language-plaintext highlighter-rouge">re</code> module into our script, in order to use <code class="language-plaintext highlighter-rouge">re.match(r'M\d{4,6}-\d{4}', id)</code>.</p> <p>Because this function will only be used within the argument parser, we define it inside of <code class="language-plaintext highlighter-rouge">parse_args</code>. (It may seem strange, but yes, you can define functions in functions.)</p> <p>Finally, we reference the validator from <code class="language-plaintext highlighter-rouge">add_argument</code> with <code class="language-plaintext highlighter-rouge">type=valid_id</code> (note that it doesn’t have parentheses).</p> <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
 <span class="k">def</span> <span class="nf">parse_args</span><span class="p">():</span>
@@ -478,20 +152,4 @@ So we’ll import the <code class="language-plaintext highlighter-rouge">re</cod
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">parser</span><span class="p">.</span><span class="n">parse_args</span><span class="p">()</span>
-</code></pre></div></div>
-
-<p>Back to the terminal to run <code class="language-plaintext highlighter-rouge">pytest</code> and out test results should now be <code class="language-plaintext highlighter-rouge">5 passed</code>.
-Note, this was a slightly different rhythm of testing, just one test at a time.
-That is yet another choice depending on what you find most useful.</p>
-
-<p>Next lesson, we’ll cover file paths from creating paths to testing for their existence.
-We can use that to validate the <code class="language-plaintext highlighter-rouge">--source</code> argument, but for now, we have a good start to the script.</p>
-
-<h2 id="argument-parsing-conclusion">Argument Parsing Conclusion</h2>
-
-<p>Python has a built-in module for creating command-line interfaces called <code class="language-plaintext highlighter-rouge">argparse</code>.
-A common way to use this module is to create a self-contained function that invokes the <code class="language-plaintext highlighter-rouge">ArgumentParser</code>, defines each desired argument, and the parses the results.
-In practice, this can become so idiomatic that you may skip writing tests for your CLI.</p>
-
-<p>However, writing test can help you keep track of requirements, implement new kinds of features, or for other reasons.
-Testing this part of a script can be complicated with all the mocking and exit codes, so the test functions built here are a good starting point if you want to build your own tests.</p>
+</code></pre></div></div> <p>Back to the terminal to run <code class="language-plaintext highlighter-rouge">pytest</code> and out test results should now be <code class="language-plaintext highlighter-rouge">5 passed</code>. Note, this was a slightly different rhythm of testing, just one test at a time. That is yet another choice depending on what you find most useful.</p> <p>Next lesson, we’ll cover file paths from creating paths to testing for their existence. We can use that to validate the <code class="language-plaintext highlighter-rouge">--source</code> argument, but for now, we have a good start to the script.</p> <h2 id="argument-parsing-conclusion"> <a href="#argument-parsing-conclusion" class="anchor-heading" aria-labelledby="argument-parsing-conclusion"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#svg-link"></use></svg></a> Argument Parsing Conclusion </h2> <p>Python has a built-in module for creating command-line interfaces called <code class="language-plaintext highlighter-rouge">argparse</code>. A common way to use this module is to create a self-contained function that invokes the <code class="language-plaintext highlighter-rouge">ArgumentParser</code>, defines each desired argument, and the parses the results. In practice, this can become so idiomatic that you may skip writing tests for your CLI.</p> <p>However, writing test can help you keep track of requirements, implement new kinds of features, or for other reasons. Testing this part of a script can be complicated with all the mocking and exit codes, so the test functions built here are a good starting point if you want to build your own tests.</p> </div> </div> <div class="search-overlay"></div> </div> </body> </html>
