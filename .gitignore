@@ -1,0 +1,8 @@
+.DS_Store
+
+# Python
+__pycache__
+*.pyc
+
+# Jekyll
+_site
