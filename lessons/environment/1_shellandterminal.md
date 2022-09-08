@@ -16,17 +16,30 @@ The terminal/shell/bash/etc can be mysterious.
 Everyone calls it something different.
 The default interface gives you nothing, just a blinking cursor.
 
-First off, terminology.
+We'll start demystifying it by working on the vocabulary.
 
-* shell - An interface by which to launch other programs. Typically refers to a command-line interface.
+* shell - An interface by which to launch other programs. Typically refers to an interface that where commands are entered as lines of text.
 * `bash`/`zsh`/`fish`/`sh` - Different shells, each with different features. `sh` is one of the earliest shells. `bash` is the default Linux and pre-MacOS 10.11 shell. `zsh` is the current MacOs shell.
 * terminal/console - The program/device that runs a shell. One terminal can run multiple shells.
-* session - a single running instance of a shell.
+* session - A single running instance of a shell. A single terminal instance may be able to run multiple sessions simultaneously (e.g. windows or tabs).
 
 As an example, when you open Terminal on macOS, it automatically starts a session of `zsh`.
 If you don't like `zsh`, you can run a different shell, if it's installed.
-Running the command `bash` starts a session of that shell, within the already running `zsh` session.
-If you want to leave the `bash` session, run `exit` and you'll return to the original `zsh` session.
+To change the shell, run the command for the shell, such as:
+
+```sh
+bash
+```
+
+Running the command `bash` starts a session of that shell within the already running `zsh` session. This is most visible by the change in the prompt.
+You can end most shell sessions with the `exit` command.
+
+```sh
+exit
+```
+
+The `bash` session should be over, and the prompt should look like the `zsh` version.
+You can end the `zsh` session with another `exit`, although typically you would close the terminal window or tab.
 If you open a new tab in Terminal, it will start another `zsh` session.
 
 The important thing about sessions is that programs depend on the session they were started in.
@@ -35,18 +48,18 @@ If you close the tab where the transcode is running or the terminal window that 
 
 It's useful to build an understanding of how these concepts relate as you use command line more often.
 For example, using `ssh` to connect to a virtual machine starts a shell session on that virtual machine.
-Closing the `ssh` session, the shell session you ran `ssh` in, or the terminal for that shell session, will stop whatever process you started on the VM, unless you take specific actions to avoid it.
+Closing the `ssh` session, the parent shell session you ran `ssh` in, or the terminal for that shell session, will stop whatever process you started on the VM, unless you take specific actions to avoid it.
 
 It's also useful to know and use the more correct terminology.
-Since macOS now uses `zsh` by default, it feels strange to advise someone to "learn `bash`".
-Better advise would be to learn command-line interfaces, using terminals, programming in a shell, or other more general statements.
-Of course, we're not going to fix the general confusion over terminology here, and these lessons likely still make plenty of mistakes.
+Since macOS now uses `zsh` by default, it can feel strange to advise someone to "learn `bash`".
+The better advise would be to learn command-line interfaces, using terminals, programming in a shell, or other more general statements.
+Of course, we're not going to fix the general confusion over terminology here, and there are probably plenty of mistakes within these lessons.
 As will all things technology, ["Be liberal in what you accept, and conservative in what you send."](https://en.wikipedia.org/wiki/Robustness_principle)
 
 ## PATH
 
 How does a shell take input like `ls` and understand to run a program called program that returns a directory listing?
-In brief, the shell is configured to look in a few locations for a program called `ls`.
+Somewhat surprisingly, it looks in a few locations to see if there is an executable file called `ls`.
 Those locations are defined in a variable called `PATH` in most shells.
 To see your `PATH`, print it in a shell session.
 
@@ -55,47 +68,53 @@ echo $PATH
 ```
 
 (The `$` in the command is required for the shell to understand to look for a variable.
-Otherwise, `echo`  will try to open a file in the current working directory called `PATH`, which probably doesn't exist.)
+Otherwise, `echo`  will treat PATH as a string and output "PATH".)
 
 A default `PATH` might look like this.
 `/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin`
-The shell interprets this as four locations: `/usr/local/bin`, `/usr/bin`, `/bin`, `/usr/sbin`, and `/sbin`.
-It will looks for a file called `ls` in each location starting from `/usr/local/bin` until it finds a file, and then run that file.
+The shell interprets this as five locations separated by colons: `/usr/local/bin`, `/usr/bin`, `/bin`, `/usr/sbin`, and `/sbin`.
+When a command is entered, the shell looks for a file called `ls` in each location until it finds a file, starting from `/usr/local/bin`.
+Once found the file is executed.
 
-We can mimic this behavior by listing the contents of each folder, and searching for a file called `ls`
+We can mimic this behavior by listing the contents of each folder, and searching for a file called `ls` and then running that file
 
 ```sh
-ls /usr/local/bin | grep ^ls$
-ls /usr/bin | grep ^ls$
-ls /bin | grep ^ls$
-> ls
+ls -d /usr/local/bin/* | grep /ls$
+ls -d /usr/bin/* | grep /ls$
+ls -d /bin/* | grep /ls$
+> /bin/ls
+/bin/ls
+> # listing of your current working directory
 ```
 
-It doesn't matter if there is an `ls` in `/usr/sbin` or `/sbin`.
+It doesn't matter if there is an `ls` in the remaining locations to search, `/usr/sbin` or `/sbin`.
 The shell stops searching as soon as it finds the copy in `/bin`.
 
+### Adding to the PATH
+
+Once you understand how `PATH` interacts with the shell, it starts explaining how tools like Homebrew work.
+
+There are actually different versions of the `ls` tool available, with more complex functionalities.
+You may want to try out one of these versions, but you don't want to overwrite the current `ls`.
+Where would you find the source code to reinstall it?
+How would you know that you got the right version?
+
+A good practice in computing is creating something new rather than overwriting something old.
+That way, if the new thing doesn't work, you can delete and use the old thing again.
+
 If we wanted to use a different version of `ls` without overwriting the default version, we could install a file to `/usr/local/bin` or `/usr/bin`.
+However, if we have a program dedicated to installing new tools, like homebrew, it should have its own folder so that it doesn't overwrite our files and vice versa.
+
+For the shell to know that the new folder exists and should be searched, it needs to be in the `PATH`. If we want the folder to be searched first, it should be listed first.
+
 We could also install it to a different folder, and add that folder to the `PATH`.
 
-A more complex `PATH` might look like this.
+The `PATH` for a Homebrew user might look like this.
 
-`/Users/Alice/.pyenv/shims:/Users/Alice/.pyenv/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin`
-
-The user named Alice has configured their shell with two additional programs, `pyenv` and `homebrew`.
-Programs installed via `pyenv` and `homebrew` are found in `~/.pyenv/shims`, `~/.pyenv/bin`, `/opt/homebrew/bin`, and `/opt/homebrew/sbin`.
-If Alice wants the updated version of `ls` available on homebrew, it is installed to `/opt/homebrew/bin`, leaving the original alone.
-
-Adding instead of overwriting is a good technology practice.
-What if the most recent version of `ls` is utterly broken with some bug?
-We can use `homebrew uninstall ls`.
-But, how do we go back to the working version that we and system process rely on?
-Backups?
-Finding the original from some online repository?
-The most reliable solution is to not disturb the original program.
+`/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin`
 
 How do we update `PATH`?
 You might have seen instructions like this during an installation.
-(Do not run this example.)
 
 ```sh
 export PATH=/some/path/to/dir/:$PATH
@@ -108,7 +127,7 @@ Reading this from right to left:
 * `PATH=` assigns the total string constructed to the right to `PATH`, overwriting whatever `PATH` was before
 * `export` updates the environment of the current shell session so that all process that use `PATH` retrieve the new value
 
-It's important that `export` only updates `PATH` for the current session.
+It's important to know that `export` only updates `PATH` for the current session.
 If you start a new session, `PATH` will not include the new value.
 For that reason, you might see this command in installation instructions.
 
@@ -130,7 +149,7 @@ These settings are the environment of the session.
 
 Over time, you may wish to customize the default environment.
 A common example is modifying `PATH` to access additional programs.
-Part of the environment is a series of files where the settings are defined.
+The settings for the environment are stored in a series of text files.
 When the shell session starts, these files are loaded and executed in a specific order.
 The first of these are system files that you generally shouldn't edit.
 The last of these files are in your home folder, and are where you can customize the shell environment, even overriding settings from the earlier files.
@@ -142,6 +161,8 @@ For `zsh`, the recommended profile is `~/.zshrc`.
 There are additional potential locations that are beyond my ability to discuss but can be researched on your own.
 In this lesson, `~/.profile` is used to generically refer to the profile that is most appropriate for you.
 
+### Adding to Your Profile
+
 Then what does the `echo "export PATH..." >> ~/.profile`?
 
 * `echo` returns the `"export ..."` as a string instead of running it
@@ -151,14 +172,18 @@ The command only appends the command to the profile.
 Future shell sessions will run the code, but the current session is still running on the old profile.
 To update the session with the new profile session, run `source ~/.profile`
 
+### Managing Your Profile
+
 The problem with `>>` appending to your profile is that the profile becomes a long list of contextless commands.
 Since you are configuring your environment, you probably want to organize and annotate these lines.
 As the `echo ... >>` indicates, the profile is a text file.
-So let's use a text editor instead.
+So let's use a text editor instead of gluing lines onto the end of an unknown file.
 
 There are shell-based text editors like `nano` (easier-to-use) and `vi` (more complicated).
-These lesson use Visual Studio Code, so we'll use that.
-Adapt the following command with the path to your profile.
+These lessons use Visual Studio Code, which is more powerful than `nano` and more user-friendly than `vi` at the cost of being a GUI.
+That means you won't be able to use it during an `ssh` session, but that's a separate problem.
+
+Make sure you have VS Code installed, and then adapt the following command with the path to your profile.
 
 ```sh
 "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" ~/.profile
@@ -169,17 +194,26 @@ Depending on how you've used your computer, this file might be empty or full.
 If it is full, take some time to read through the various lines.
 If there's anything you don't understand, you should probably add comments on the lines above.
 If there's anything that looks like a duplicate or conflict, think about cleaning it up.
+
 Keep in mind that the profile is read and executed from top to bottom.
+If the first two lines of the profile are.
+
+```sh
+export PATH=/some/path/to/dir/:$PATH
+export PATH=/different/path:$PATH
+```
+
+The result would be `/different/path:/some/path/to/dir/:/usr/bin/:...`
 
 ### Adding to the profile
 
 It is convenient to launch VS Code from the terminal, but cumbersome to use that path.
-Let's update the profile by adding the path to `code` to `PATH`.
-In future shell sessions, we can open any file or directory in VS Code with the command `code path/to/dir/or/file`
+Let's update the profile by adding the file's path to `PATH`.
+Once we do that, we can open any file or directory in VS Code with the command `code path/to/dir/or/file`
 
 If the `PATH` has already been updated with the VS Code path, consider updating it with some of the advice below.
 
-1. Go to the end of the file and add a couple new lines
+1. Go to the end of the profile and add a couple new lines
 2. Add a comment about you addition, like "Launch VS Code from shell"
 3. Add a line to update the `PATH`. In this case, add the directory that contains `code` to the end of `PATH` since only one program will be found there. `export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"`
 4. Add one more new line to the file to make it easier for future editors (yourself).
@@ -218,6 +252,8 @@ To accomplish the above customizations on a base install of `zsh`, I added the f
 
 ```sh
 # Configure ZSH prompt
+PROMPT='%(?.%F{green}√.%F{red}?%?)%f %B%F{240}%1~%f%b %# '
+RPROMPT='%D{ %Y %b %d } %*'
 ```
 
 I understand this enough to tweak aspects of it, but not enough to really change it.
