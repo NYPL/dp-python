@@ -70,12 +70,12 @@ pyenv local project-env
 pip install bagit==1.6.1
 pip list
 > ...
-> awscli        1.6.1
+> bagit        1.6.1
 > ...
 cd ../
 pip list
 > ...
-> awscli        1.8.1
+> bagit        1.8.1
 > ...
 ```
 
@@ -133,3 +133,148 @@ pyenv versions
 pyenv global
 > system
 ```
+
+## Using `pyenv`
+
+Once `pyenv` is installed, you have the power to run as many different Python environments as you need.
+
+### Installing Python Versions
+
+First, install a new version of Python.
+`pyenv` tracks all major and minor releases of Python back to version 2.1.3.
+It also track several related distributions, such as `minipython` and `pypy`.
+To see the full list,
+
+```sh
+pyenv install --list
+```
+
+We're only interested in the main releases at the top of the list, like 3.9.6 and 3.7.13.
+As an example, install one of the last versions of Python 2, 2.7.18.
+
+```sh
+pyenv install 2.7.18
+```
+
+Once the install finishes, list the versions of Python avaialable to `pyenv`.
+
+```sh
+pyenv versions
+```
+
+> Note, not all versions of Python are installable via `pyenv`.
+> For example, any version less than 3.9 has to be specifically patched to work on a Mac with Apple Silicon.
+> 2.7.18 is one of these patched versions.
+
+### Using `pyenv` in a shell session
+
+`pyenv` can be used to temporarily change the Python session for a shell session.
+To demonstrate, we can try using f-strings, which were introduced in Python 3.6.
+
+```sh
+# change the python version in this shell session
+pyenv shell 2.7.18
+# run the python interpreter
+python
+```
+
+```py
+string = 'hello'
+f'{string} f-strings are useful'
+# should result in a syntax error
+```
+
+Starting a new shell session or switching `pyenv` back to the system Python version shows gets a version of Python that can use f-strings.
+
+```sh
+pyenv shell system
+python3
+```
+
+```py
+string = 'hello'
+f'{string} f-strings are useful'
+# 'hello f-strings are useful'
+```
+
+### Creating a `pyenv` environment
+
+Setting `pyenv` for a shell session is useful for experimentation.
+When you want to freeze a version of Python alongside a project, you can set a local `pyenv` variable.
+
+```sh
+mkdir ~/oldpy
+cd ~/oldpy
+pyenv local 2.7.18
+# confirm the version
+python -V
+```
+
+As with many things terminal related, this is accomplished by a text file.
+`pyenv version` reports both the current version/environment and how that version was set.
+When using a locally set version, this should be the path to a file called `.python-version` in that directory.
+
+```sh
+pyenv version
+# ... oldypy/.python-version
+cat ~/oldpy/.python-version
+# 2.7.18
+```
+
+The extremely useful behavior is that `pyenv` will automatically use this version whenever the shell is in that directory or a child directory.
+It will also stop using that version whenever it's not in that directory.
+
+```sh
+cd ../
+pyenv version
+cd oldpy
+pyenv version
+```
+
+If you need to change the local version of Python, run `pyenv local (version number)`.
+If you don't want to have a local version of Python, run `pyenv local system` or delete the `.python-version` file.
+
+### Creating a `pyenv` virtual environment
+
+Creating environments that use the same version of Python but different versions of Python modules is the next step in customization.
+For this, you need to first create the environment with `pyenv virtualenv (Python version) (environment name)`.
+Once created you can use that environment with the same `local` and `shell` commands.
+
+```sh
+# create the environment
+pyenv virtualenv 2.7.8 oldbagit
+# associate a directory with the environment
+cd ~/oldpy
+pyenv local oldbagit
+```
+
+When working in the virtual environment, new modules are installed only to that environment.
+
+```sh
+cd ~/oldpy
+pip install bagit==0.1p
+pip list
+# ... bagit
+pyenv shell 2.7.8
+pip list
+```
+
+## Removing Environments
+
+Eventually you might create a whole garden of Python versions and virtual environments that can be managed by `pyenv`.
+Eventually that garden might feel overgrown and in need of pruning.
+For that, `pyenv uninstall (version or name)` will remove all the source files.
+
+```sh
+pyenv uninstall oldbagit
+pyenv uninstall 2.7.8
+```
+
+This removes the source files, but any folders that used those versions will still have that value in `.python-version`.
+
+```sh
+cd ~/oldpy
+pyenv version
+```
+
+To clean this up, you will need to either set a new local version or delete the file.
