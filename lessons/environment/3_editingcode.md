@@ -1,7 +1,7 @@
 ---
 title: Editing Code
 parent: Creating an Environment
-weight: 3
+nav_order: 3
 ---
 
 * Using a terminal within VS Code

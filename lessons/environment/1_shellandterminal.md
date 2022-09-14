@@ -1,7 +1,7 @@
 ---
 title: Shell and Terminal
 parent: Creating an Environment
-weight: 1
+nav_order: 1
 ---
 
 ## Goals

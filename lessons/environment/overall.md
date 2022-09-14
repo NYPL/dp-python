@@ -1,6 +1,7 @@
 ---
 title: Creating an Environment
 has_children: True
+nav_order: 1
 ---
 
 You have probably customized your computer.

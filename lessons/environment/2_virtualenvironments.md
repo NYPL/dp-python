@@ -1,7 +1,7 @@
 ---
 title: Virtual Environments
 parent: Creating an Environment
-weight: 2
+nav_order: 2
 ---
 
 ## Goals

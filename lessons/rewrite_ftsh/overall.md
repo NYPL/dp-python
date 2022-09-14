@@ -1,7 +1,7 @@
 ---
 title: Rewriting ft.sh
 has_children: true
-nav_order: 1
+nav_order: 2
 ---
 
 We're re-implementing `ft.sh` in order to learn features of Python scripting.
@@ -92,11 +92,11 @@ We'll break these features down into the following 4 lessons.
 2. Working with filepaths in Python
    * Extract the Collection number from the Media ID
    * Create folders for the bag and metadata based on the collection ID and Media ID
-3. Running bash commands from a Python script
-   * Create a siegfried report from the digital carrier
-4. Using the bagit module and object-oriented programming in Python
+3. Using the bagit module
    * Transfer the files from the carrier to the bag
    * Verify the bagging process
    * Report the size and file count of the transfer
+4. Running bash commands from a Python script
+   * Create a siegfried report from the digital carrier
 
 But before those lessons, we'll look at a programming concept called test-driven development.
