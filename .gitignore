@@ -3,6 +3,7 @@
 # Python
 __pycache__
 *.pyc
+.python-version
 
 # Jekyll
 _site
