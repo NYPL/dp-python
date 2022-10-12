@@ -9,6 +9,13 @@ nav_order: 2
 * Managing Python versions
 * Managing Python modules
 
+## Before this lesson
+
+* Know which profile file your shell uses
+* Make sure Visual Studio Code is added to your path
+* Update your homebrew with `brew update`
+
+
 ## What is a virtual environment
 
 A shell session has an environment that includes many configurations.
@@ -196,6 +203,10 @@ string = 'hello'
 f'{string} f-strings are useful'
 # 'hello f-strings are useful'
 ```
+
+If you are running into problems with Python versions, you might have a version of `conda`, the Anaconda virtual environment manager, that is interfering with `pyenv`.
+You can temporarily solve the problem by running `conda deactivate`.
+Your approach to solving it more permanently will depend on your longer term choices of virtual environment managers.
 
 ### Creating a `pyenv` environment
 
