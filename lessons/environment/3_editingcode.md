@@ -8,6 +8,12 @@ nav_order: 3
 * Linting Python in VS Code
 * Extending VS Code functions
 
+## Before This Lesson
+
+* Make sure Visual Studio Code is added to your path
+* Update your homebrew with `brew update`
+* Make sure `pyenv` is working correctly
+
 ## Using a Text Editor for Code
 
 There are two extremes of software for coding.
@@ -136,6 +142,8 @@ Some of these tools have their own keyboard shortcuts, which are helpfully displ
 
 You can also open the preferences for VS Code from the Command Palette.
 As a `pyenv` user, there's a particularly useful setting to create.
+VS Code is over enthusiastic about activating `pyenv` environments in its terminal.
+To make it function like other terminals, do the following.
 
 1. In the Command Palette, launch `Open User Settings (JSON)`. It will open a new tab.
 2. Within the top level of the JSON file (the first set of `{}`) paste the following, `"python.terminal.activateEnvironment": false`

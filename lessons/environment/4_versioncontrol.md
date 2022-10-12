@@ -10,6 +10,12 @@ nav_order: 4
 * Configuring git with a remote account
 * Using git from where you are
 
+## Before this lesson
+
+* Know which profile file your shell uses
+* Make sure Visual Studio Code is added to your path
+* Update your homebrew with `brew update`
+
 ## Why Use Version Control
 
 Writing is almost never a straightforward process.
@@ -129,3 +135,14 @@ Maybe a function, a few paragraphs, an editing stage.
 * Commit changes from only a few files at a time, preferably 1.
 * If you forgot to do the following, give yourself some slack and make some bulk commits, only after you check each change.
 We're aiming for good practice, not best.
+
+
+## Clean-up
+
+Delete the test directory once you are finished exploring git features.
+Much like profiles and `pyenv` local settings, git repository information is stored within the folder.
+Unless you have sent portions of the repository to a remote, deleting the folder deletes the repository.
+
+```sh
+rm ~/gittest
+```
