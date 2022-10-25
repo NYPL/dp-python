@@ -119,7 +119,7 @@ A powerful feature of the VS Code `git` integration is live display of the chang
 
 These indicators are extremely useful for understanding what changes have been made to a file since the last commit, especially accidental changes.
 
-## Strategies for `git` usage
+### Strategies for `git` commits
 
 It's beyond the scope of this guide to discuss the best strategies and workflows for using `git`.
 The following are general guidelines.
@@ -134,8 +134,45 @@ Maybe a function, a few paragraphs, an editing stage.
   * `Added three new features and fixed some stuff` is too big.
 * Commit changes from only a few files at a time, preferably 1.
 * If you forgot to do the following, give yourself some slack and make some bulk commits, only after you check each change.
-We're aiming for good practice, not best.
 
+## Using `git` branches
+
+When you update a `git` repository, it's like installing new versions of software or changing Python versions.
+It's generally better to make those changes in a new environment instead of directly overwriting the current version.
+The main way to do this in a `git` repository is with a branch.
+
+Every `git` repository has a mainline version of its contents, often called `main`.
+This should contain the most-up-date and working version of the repository.
+If you want to add new code, repair typos, or make other changes to the repository, you can start a branch.
+Once you complete your changes and have a new better version of the repository, you can merge the branch back into the mainline version.
+By merging all the changes at once, other users can always trust that `main` is the most up-to-date, working version.
+
+To create a branch in VS Code, you have a few options.
+
+* Start a terminal session and run the command `git branch <branchname>` within a folder of the repository.
+* Start the command palette (<cmd> + <shift> + <p>), type in 'branch', and follow the prompts.
+* Click the git icon in the bottom-left corner, choose to create a new branch, and follow the prompts.
+
+Whichever way you choose, you'll have created a branch.
+In order to use the branch you'll need to checkout the branch.
+Again there are a few options.
+
+* Start a terminal session and run the command `git checkout <branchname>` within a folder of the repository.
+* Start the command palette (<cmd> + <shift> + <p>), type in 'checkout', and follow the prompts.
+* Click the git icon in the bottom-left corner and choose the name of the branch you want to checkout.
+
+Once you checkout a branch, make all of your commits to that branch until you complete the feature that you need
+
+### Strategies for `git` branches
+
+The following are general guidelines.
+
+* Make sure you have checked out `main` before creating a new branch.
+* Make sure you have the most up-to-date version of `main` before creating a new branch.
+* Create a branch with a completable purpose in mind
+  * `fix-cli` is good
+  * `disk-image-docs` is good
+  * `my-edits` is probably a never-ending task
 
 ## Clean-up
 
