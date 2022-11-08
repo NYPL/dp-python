@@ -83,19 +83,29 @@ For now, we have to make a few assumptions about our script.
 * A successful run of `filetransfer.py` will create the appropriate folder at a destination.
 * We'll learn a better way to refer to that folder in our test in the future.
 
-To test that the script performs the actions we want, we will need a function that runs `filetransfer.main()`.
-Then it checks if the appropriate folder is created.
+To test that the script performs the actions we want, we will need
+
+1. to give a docstring to the function that explains the test
+2. to define the setup data for the test
+3. to call the functions that we want to test, ie. `filetransfer.main()`
+4. to assert that the expected result occured
 
 Every test that we write will have one or more `assert` statements.
 These evaluate whether a statement is true.
 Their syntax is very similar to an `if` statement, except there is no colon at the end that sets off another code-block.
 
 ```py
+import pathlib
 import filetransfer
 
+# functional test
 def test_completedtransfer():
+    """script should create a folder with the contents from the source"""
+    expected_folder = pathlib.Path('/path/to/destination')
+
     filetransfer.main()
-    assert
+
+    assert expected_folder.exists()
 ```
 
 To check our test, use the auto-discovery feature of pytest.
@@ -110,6 +120,8 @@ test_python.py F                             [100%]
 _______________ test_completedtransfer ____________
 
     def test_completedtransfer():
+        expected_folder = pathlib.Path('/path/to/destination')
+
 >       filetransfer.main()
 E       AttributeError: module 'filetransfer' has no attribute 'main'
 
@@ -141,8 +153,11 @@ test_python.py F                                   [100%]
 _________________ test_completedtransfer _________________
 
     def test_completedtransfer():
+        expected_folder = pathlib.Path('/path/to/destination')
+
         filetransfer.main()
->       assert pathlib.Path('/path/to/destination').exists()
+
+>       assert expected_path.exists()
 E       AssertionError: assert False
 ...
 filetransfer_test.py.py:6: AssertionError
