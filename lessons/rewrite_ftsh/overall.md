@@ -21,7 +21,7 @@ I will be explaining the difference between bash and Python where I can, but the
 3. validate the transfer
 4. report stats
 
-The source code is in the program's [Github repository](https://github.com/NYPL/digarch_scripts/blob/main/Mac/ft.sh)
+The source code is in the program's [Github repository](https://github.com/NYPL/digarch_bash/blob/main/Mac/ft.sh).
 
 One way to convert the bash script into Python would be to translate each line of code.
 For example, the following code asks for the path to the digital carrier and stores that input to a variable named MediaID.
@@ -59,7 +59,7 @@ To build an outline of what our script needs to do, we can look at the comments 
 #Check that sf conf file is set properly
 echo -e "${BLUE}This script will create a file transfer.${NC}"
 echo -e "${BLUE}Please drag the SIP folder over this window. See the folder path displayed? Hit return!:${NC}"
-echo -e "${BLUE}Please enter the MediaID for this file transfer and hit return:${NC}"
+...
 #remove - and disk# to create collection#
 #echo -e $Collection
 #echo -e $Bag
