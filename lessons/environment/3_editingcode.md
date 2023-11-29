@@ -91,11 +91,11 @@ Syntax highlighting helps.
 As you type a statement like `os.listdir()`, you'll notice that a window pops up with possibilities that narrow as you type.
 This feature is called IntelliSense.
 
-Try typing the following statement piece-by-piece, `os.path.split()`
+Try typing the following statement piece-by-piece, `os.path.basename()`
 
 * `os.` - the box now shows the methods and classes of `os`
 * `path.` - the box shows the methods of the `path` class
-* `basename(` - the box shows the definition of the `basename()` method, including the expected arguments, output type, and a brief explanation.
+* `basename()` - the box shows the definition of the `basename()` method, including the expected arguments, output type, and a brief explanation.
 
 This only works if you have the correct import statement.
 IntelliSense is parsing the script, recognizing which modules have been imported, and then importing the definitions form those files.
@@ -161,7 +161,7 @@ VS Code has a built-in terminal.
 So in addition to helping to check code as it is written, VS Code can be used to run that code while the editor is still visible.
 This terminal has access to all of the same shells as the standalone terminal program.
 
-To see it in action, press ``<alt> + <shift> + <`>``.
+To see it in action, press ``<control> + <`>``.
 A pane should appear at the bottom of the VS Code window with the same prompt as your typical shell session.
 Running commands like `echo $PATH` and `pwd` should give the same results.
 
