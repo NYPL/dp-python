@@ -55,7 +55,7 @@ That also means that our first test will always fail until we have completed the
 ## Using PyTest
 
 There are a few Python testing framework.
-We're going to use PyTest, primarily because it's recommended by Joanna White.
+We're going to use PyTest, primarily because it's recommended by Joanna White, Knowledge & Collections Developer at the BFI.
 
 To start our project, we'll create two files `filetransfer_test.py` and `filetransfer.py`
 
@@ -88,7 +88,7 @@ To test that the script performs the actions we want, we will need
 1. to give a docstring to the function that explains the test
 2. to define the setup data for the test
 3. to call the functions that we want to test, ie. `filetransfer.main()`
-4. to assert that the expected result occured
+4. to assert that the expected result occurred
 
 Every test that we write will have one or more `assert` statements.
 These evaluate whether a statement is true.
