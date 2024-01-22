@@ -1,4 +1,53 @@
 import requests
+from pathlib import Path
+import time
+import logging
+
+
+
+
+def get_token(credential_set: str) -> str:
+    """
+    return token string
+    check for existing valid token in token file
+    if the file does not exist or the token is out of date, create token
+    """
+
+    token_file = Path(f"{credential_set}.token.file")
+    if token_file.is_file():
+        time_issued, sessiontoken = token_file.read_text().split("\n")
+        # tokens are valid for 500 seconds
+        if time.time() - float(time_issued) < 500:
+            return sessiontoken
+
+    return create_token(credential_set, token_file)
+
+
+def create_token(credential_set: str, token_file: Path) -> str:
+    """
+    request token string based on credentials
+    write time and token to a file and return token
+    """
+    user, pw, tenant = credential_set
+    # build the query string and get a new token
+    url = "https://nypl.preservica.com/api/accesstoken/login"
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    payload = f"username={user}&password={pw}&tenant={tenant}"
+    response = requests.post(url, headers=headers, data=payload)
+    data = response.json()
+
+    if not data["success"]:
+        logging.error("Token did not generate successfully")
+
+    # write token to token.file for later reuse
+    token_file.write_text(f'{str(time.time())}\n{data["token"]}')
+
+    return data["token"]
+
+
+
+
+
 
 '''
 curl -X 'POST' \
@@ -29,3 +78,21 @@ https://nypl.preservica.com/api/entity/progress/8ba8b96d-a60c-466d-9bd5-73ae7ea7
 3. GET
 https://nypl.preservica.com/api/entity/actions/exports/8ba8b96d-a60c-466d-9bd5-73ae7ea7325e/content
 """
+
+def main():
+    """
+    generate token
+    API
+    """
+    user = input("Enter user name: ")
+    pw = input("Enter password: ")
+    tenant = input("Enter tenant (nypl or nypltest)")
+
+    credential_set = (user, pw, tenant)
+
+    accesstoken = get_token(credential_set)
+
+
+
+if __name__ == "__main__":
+    main()
