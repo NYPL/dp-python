@@ -3,9 +3,6 @@ from pathlib import Path
 import time
 import logging
 
-
-
-
 def get_token(credential_set: str) -> str:
     """
     return token string
@@ -44,6 +41,9 @@ def create_token(credential_set: str, token_file: Path) -> str:
 
     return data["token"]
 
+# def request_api_call(type: str, accesstoken: str, url: str) -> requests.Response:
+#     headers
+
 
 
 
@@ -63,8 +63,6 @@ curl -X 'POST' \
 </ExportAction>'
 
 '''
-
-# how do we want to get accesstoken?
 
 """
 1. POST
@@ -91,6 +89,14 @@ def main():
     credential_set = (user, pw, tenant)
 
     accesstoken = get_token(credential_set)
+
+    export_so_url = "https://nypl.preservica.com/api/entity/structural-objects/85fa0068-f63b-49fc-8310-e0e11944c45a/exports"
+    export_headers = {
+        "Preservica-Access-Token": accesstoken,
+        "data": '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ExportAction xmlns="http://preservica.com/EntityAPI/v6.12" xmlns:xip="http://preservica.com/XIP/v6.12"><IncludeContent>Content</IncludeContent><IncludeMetadata>Metadata</IncludeMetadata><IncludedGenerations>All</IncludedGenerations><IncludeParentHierarchy>false</IncludeParentHierarchy></ExportAction>'
+    }
+    post_response = requests.request("POST", export_so_url, headers=export_headers)
+    print(post_response)
 
 
 
