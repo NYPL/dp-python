@@ -2,6 +2,7 @@ import requests
 from pathlib import Path
 import time
 import logging
+import xml.etree.ElementTree as ET
 
 def get_token(credential_set: str) -> str:
     """
@@ -92,10 +93,17 @@ def main():
 
     export_so_url = "https://nypl.preservica.com/api/entity/structural-objects/85fa0068-f63b-49fc-8310-e0e11944c45a/exports"
     export_headers = {
-        "Preservica-Access-Token": accesstoken,
-        "data": '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ExportAction xmlns="http://preservica.com/EntityAPI/v6.12" xmlns:xip="http://preservica.com/XIP/v6.12"><IncludeContent>Content</IncludeContent><IncludeMetadata>Metadata</IncludeMetadata><IncludedGenerations>All</IncludedGenerations><IncludeParentHierarchy>false</IncludeParentHierarchy></ExportAction>'
+        "Preservica-Access-Token": accesstoken
     }
-    post_response = requests.request("POST", export_so_url, headers=export_headers)
+    xml_str = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <ExportAction xmlns="http://preservica.com/EntityAPI/v6.12" xmlns:xip="http://preservica.com/XIP/v6.12">
+    <IncludeContent>Content</IncludeContent>
+    <IncludeMetadata>Metadata</IncludeMetadata>
+    <IncludedGenerations>All</IncludedGenerations>
+    <IncludeParentHierarchy>false</IncludeParentHierarchy>
+    </ExportAction>"""
+    xml_data = ET.fromstring(xml_str)
+    post_response = requests.request("POST", export_so_url, headers=export_headers, data=xml_data.text)
     print(post_response)
 
 
