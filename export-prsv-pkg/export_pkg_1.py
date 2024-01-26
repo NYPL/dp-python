@@ -107,6 +107,13 @@ def main():
     post_response = requests.post(export_so_url, headers=export_headers, data=xml_str)
     print(post_response)
 
+    if post_response.status_code == 202:
+        progress_token = post_response.text
+    else:
+        logging.error(f"POST request unsuccessful: code {post_response.status_code}")
+
+
+
 
 
 if __name__ == "__main__":
