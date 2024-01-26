@@ -3,6 +3,7 @@ from pathlib import Path
 import time
 import logging
 import xml.etree.ElementTree as ET
+import sys
 
 def get_token(credential_set: str) -> str:
     """
@@ -72,7 +73,7 @@ header needs to include XML
 This returns a progress token
 
 2. Check status
-https://nypl.preservica.com/api/entity/progress/8ba8b96d-a60c-466d-9bd5-73ae7ea7325e?includeErrors=true
+https://nypl.preservica.com/api/entity/progress/{8ba8b96d-a60c-466d-9bd5-73ae7ea7325e}?includeErrors=true
 
 3. GET
 https://nypl.preservica.com/api/entity/actions/exports/8ba8b96d-a60c-466d-9bd5-73ae7ea7325e/content
@@ -108,9 +109,37 @@ def main():
     print(post_response)
 
     if post_response.status_code == 202:
-        progress_token = post_response.text
+        progress_token = post_response.content
     else:
         logging.error(f"POST request unsuccessful: code {post_response.status_code}")
+        sys.exit(0)
+
+    check_progress_url = f"https://nypl.preservica.com/api/entity/progress/{progress_token}?includeErrors=true"
+
+    get_progress_headers = {
+        "Preservica-Access-Token": accesstoken,
+        "accept": "application/xml;charset=UTF-8"
+    }
+    get_progress_response = requests.get(check_progress_url, headers=get_progress_headers)
+
+    if get_progress_response.status_code == 200:
+        logging.info(f"Progress completed. Will proceed to download")
+
+        get_export_url = f"https://nypl.preservica.com/api/entity/actions/exports/{progress_token}/content"
+
+        get_export_headers = {
+            "Preservica-Access-Token": accesstoken,
+            "accept": "application/octet-stream",
+            "Content-Type": "application/xml;charset=UTF-8"
+        }
+        try:
+            get_export_request = requests.get(get_export_url, headers=get_export_headers)
+        except:
+            logging.error(f"Unsuccessful download.")
+
+    else:
+        logging.error(f"GET progress request unsuccessful: code {post_response.status_code}")
+
 
 
 
