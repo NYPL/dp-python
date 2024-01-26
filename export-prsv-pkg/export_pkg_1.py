@@ -93,17 +93,18 @@ def main():
 
     export_so_url = "https://nypl.preservica.com/api/entity/structural-objects/85fa0068-f63b-49fc-8310-e0e11944c45a/exports"
     export_headers = {
-        "Preservica-Access-Token": accesstoken
+        "Preservica-Access-Token": accesstoken,
+        "Content-Type": "application/xml;charset=UTF-8",
     }
-    xml_str = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-    <ExportAction xmlns="http://preservica.com/EntityAPI/v6.12" xmlns:xip="http://preservica.com/XIP/v6.12">
-    <IncludeContent>Content</IncludeContent>
-    <IncludeMetadata>Metadata</IncludeMetadata>
-    <IncludedGenerations>All</IncludedGenerations>
-    <IncludeParentHierarchy>false</IncludeParentHierarchy>
-    </ExportAction>"""
-    xml_data = ET.fromstring(xml_str)
-    post_response = requests.request("POST", export_so_url, headers=export_headers, data=xml_data.text)
+
+    xml_str = "<ExportAction xmlns=\"http://preservica.com/EntityAPI/v7.0\" xmlns:xip=\"http://preservica.com/XIP/v7.0\">" \
+                                + "<IncludeContent>Content</IncludeContent>" \
+                                + "<IncludeMetadata>Metadata</IncludeMetadata>" \
+                                + "<IncludedGenerations>All</IncludedGenerations>" \
+                                + "<IncludeParentHierarchy>false</IncludeParentHierarchy>" \
+                                + "</ExportAction>"
+
+    post_response = requests.post(export_so_url, headers=export_headers, data=xml_str)
     print(post_response)
 
 
