@@ -5,6 +5,8 @@ import logging
 import xml.etree.ElementTree as ET
 import sys
 
+logging.basicConfig(level=logging.INFO)
+
 def get_token(credential_set: str) -> str:
     """
     return token string
@@ -106,10 +108,11 @@ def main():
                                 + "</ExportAction>"
 
     post_response = requests.post(export_so_url, headers=export_headers, data=xml_str)
-    print(post_response)
 
     if post_response.status_code == 202:
-        progress_token = post_response.content
+        logging.info(f"Progress token: {post_response.text}")
+        progress_token = post_response.text
+        time.sleep(10)
     else:
         logging.error(f"POST request unsuccessful: code {post_response.status_code}")
         sys.exit(0)
@@ -124,21 +127,25 @@ def main():
 
     if get_progress_response.status_code == 200:
         logging.info(f"Progress completed. Will proceed to download")
+        time.sleep(60)
 
         get_export_url = f"https://nypl.preservica.com/api/entity/actions/exports/{progress_token}/content"
 
         get_export_headers = {
             "Preservica-Access-Token": accesstoken,
-            "accept": "application/octet-stream",
             "Content-Type": "application/xml;charset=UTF-8"
         }
         try:
             get_export_request = requests.get(get_export_url, headers=get_export_headers)
+            if get_export_request.status_code == 200:
+                logging.info(f"The exported content is in the process of being downloaded")
+            else:
+                logging.error(f"Get export request unsuccessful: {get_export_request.status_code}")
         except:
             logging.error(f"Unsuccessful download.")
 
     else:
-        logging.error(f"GET progress request unsuccessful: code {post_response.status_code}")
+        logging.error(f"GET progress request unsuccessful: code {get_progress_response.status_code}")
 
 
 
