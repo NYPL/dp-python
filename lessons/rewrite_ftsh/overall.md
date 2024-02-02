@@ -7,9 +7,15 @@ nav_order: 2
 We're re-implementing `ft.sh` in order to learn features of Python scripting.
 Part of this will be to add features that ft.sh never had.
 
-While bash is a very useful language, there are parts that I find really vague.
-These include things like [parsing command-line arguments](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/getopts.html), [converting between data types](https://tldp.org/LDP/abs/html/untyped.html), and [how the shell expansions work](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html).
+While shell scripting is a very useful language, there are parts that I find really vague.
+These include things like:
+
+* [parsing command-line arguments](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/getopts.html)
+* [converting between data types](https://tldp.org/LDP/abs/html/untyped.html)
+* [how the shell expansions work](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html).
+
 These are features that have made it harder for me to write scripts that work the way I want them to.
+They are also things that I think Python handles more clearly or doesn't have to do.
 I will be explaining the difference between bash and Python where I can, but these explanations may be hampered by my own misunderstandings of bash.
 
 ## What does `ft.sh` do?
@@ -49,17 +55,22 @@ If we want to count files in a folder using Python, we would probably use a diff
 First, because there is no equivalent to `tree` in Python.
 Second, because the file count is a byproduct of `tree`, and we might not need to produce the tree structure if we won't use it.
 
-The module will rewrite the logic of the bash script.
-The script will still accomplish the same tasks, but it will accomplish them in a different way.
-This process is called re-factoring.
-To build an outline of what our script needs to do, we can look at the comments in `ft.sh`.
+The new Python script still needs to accomplish the same goals, but it can accomplish them in a different way.
+To do this, we will re-factor the script, first understanding what it accomplishes and then writing new code based on that understanding.
+Technically, you re-factor in the same language in order to achieve some other goal, like faster, better documented, or more maintainable code.
+For our purposes, it's still useful to think of this shell script to Python script jump as a re-factor.
+
+## Understanding what `ft.sh` does
+
+One way to approach re-factoring is to read through the existing code and then create a generic outline of its logic.
+You can do this line-by-line, but `ft.sh` has plenty of comments and `echo`s that explain the intent of the code.
 
 ```bash
 #This is a program to create Siegfried metadata, bags and validation for file transfers.
 #Check that sf conf file is set properly
 echo -e "${BLUE}This script will create a file transfer.${NC}"
 echo -e "${BLUE}Please drag the SIP folder over this window. See the folder path displayed? Hit return!:${NC}"
-...
+echo -e "${BLUE}Please enter the MediaID for this file transfer and hit return:${NC}"
 #remove - and disk# to create collection#
 #echo -e $Collection
 #echo -e $Bag
@@ -73,7 +84,11 @@ echo -e "${BLUE}Please drag the SIP folder over this window. See the folder path
 #output size of payload in kb
 ```
 
-From this list, the features a Python version will need are:
+Some of these comments are leftover code used to debug the script when it was first written, like `#echo -e $Collection`.
+Using comments like this is a good intuition, but it can be confusing to other people that may use the script.
+We'll talk about ways to limit the need for this.
+
+From the list, I've extracted the following features for the Python version:
 
 * Explain the purpose of the script
 * Accept user input for the file path of the digital carrier
