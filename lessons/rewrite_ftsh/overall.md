@@ -1,16 +1,16 @@
 ---
-title: Rewriting ft.sh
+title: Rewriting a Shell Script in Python
 has_children: true
-nav_order: 2
+nav_order: 3
 ---
 
 We're re-implementing `ft.sh` in order to learn features of Python scripting.
 Part of this will be to add features that ft.sh never had.
 
-While bash is a very useful language, there are parts that I find really vague.
+While shell scripting is a very useful language, there are parts that I find really vague.
 These include things like [parsing command-line arguments](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/getopts.html), [converting between data types](https://tldp.org/LDP/abs/html/untyped.html), and [how the shell expansions work](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html).
 These are features that have made it harder for me to write scripts that work the way I want them to.
-I will be explaining the difference between bash and Python where I can, but these explanations may be hampered by my own misunderstandings of bash.
+I will be explaining the difference between shell scripts and Python where I can, but these explanations may be hampered by my own misunderstandings of shell scripts.
 
 ## What does `ft.sh` do?
 
@@ -23,7 +23,7 @@ I will be explaining the difference between bash and Python where I can, but the
 
 The source code is in the program's [Github repository](https://github.com/NYPL/digarch_scripts/blob/main/Mac/ft.sh)
 
-One way to convert the bash script into Python would be to translate each line of code.
+One way to convert the shell script into Python would be to translate each line of code.
 For example, the following code asks for the path to the digital carrier and stores that input to a variable named MediaID.
 
 ```bash
