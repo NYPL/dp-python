@@ -1,0 +1,15 @@
+---
+title: Functions and Type Hinting
+parent: Batch Processing Files
+nav_order: 2
+---
+
+## Goals
+
+* Learn to conceptualize a script as a set of functions
+* Use type hints to document your script in code
+
+## From Steps to Functions
+
+Part of the reason for creating the plan is that it provides the setup for writing functions.
+You may have been introduced to functions
