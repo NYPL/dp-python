@@ -1,0 +1,157 @@
+---
+title: Flow planning
+parent: Batch Processing Files
+nav_order: 1
+---
+
+## Goals
+
+* Learn good practices in planning a script
+* Simplify your code by making each step more purposeful
+* Develop a sense for how much planning detail is enough
+
+## Why plan
+
+Putting down your ideas of what you want a script to do is good for a few reasons.
+
+1. You can understand what will be hardest to do
+2. You can rearrange steps without having to rearrange code
+3. You can refer back to it if you don't finish in one day
+4. You can share it with a colleague for feedback
+5. You can evaluate StackOverflow advice against it
+6. You can direct feedback from an AI chatbot with it
+
+These are all possible direct benefits.
+The greatest benefit happens in the background.
+By thinking about what and how before writing any code, you start to change your relationship with Python from something with tens of modules, thousands of functions, and millions of choices that could all be needed at any moment into a toolbox that you apply selectively to each problem.
+
+That can be a drastic decrease on the mental load when you're trying to write something.
+It is its own skill to learn, and many people have their own methods.
+One common feature is that it doesn't involve writing functional code.
+
+You can create a numbered list.
+You can draft step-by-step procedures.
+You can draw a flow diagram.
+You can write stuff that looks kind of like code (pseudo-code).
+But, don't start putting down Python immediately.
+At this moment you're thinking through only the logic of your problem.
+
+## Making a plan
+
+The task for this script is to perform an operation on a set of files.
+It's vague because the focus for the next couple of sections is on everything except the final operation.
+Many workflows share a common set of abstract steps.
+By recognizing them, it should be easier to adapt the approach to another task.
+
+So, to perform an operation on a set of files, what will need to happen?
+It can help to start from one end of the process and ask questions until you get to the other end.
+For example:
+
+* perform the operation, what will be the file the operation is performed on?
+* test a file against a set of conditions, where does the potential file come from?
+* create a list of files to test, what is the starting point to start finding files?
+* get a starting directory
+
+This list isn't perfect.
+It might look different from the list that you might make.
+We might need to update it in the future as we look at the problem more.
+But we have a rough process.
+
+1. Start with a folder
+2. Find all the files in that folder
+3. Find all the files that we care about among those files
+4. Run the operation against each of those files
+
+I tend to use formulaic language for this work.
+It removes the burden of trying to write creative sentences, and it helps me standardize what is being described.
+Generally, I'll start with a verb and name the main pieces of data I expect to use as input to the step.
+The final phrase typically describes the data I expect to have at the end of the step.
+(At the end of step 2, I will have a list of all files that are in the folder).
+
+The sequential nature of this list structures the overall approach to this code as well.
+Because each step is finished before the next starts, if we follow this plan in code, the script will look very differently than if we were to complete the whole process for each file as we found it.
+
+1. Start with a folder
+2. Find all the files in that folder
+   1. Determine if a file meets our criteria to run the operation
+      1. Run the operation against the file
+
+Nesting at a very high conceptual level can lead to code that is more complex to write, understand, debug, and improve.
+When possible, write out a plan that involves finishing each step before starting the next.
+
+## Codifying the plan
+
+The next step is to be more specific about what each step is doing.
+This is still at a very abstract level.
+No code, but a general plan of what each step requires as input and will produce as output.
+
+### Start with a folder
+
+We need a way to accept a folder path for the next step to use.
+This could be hard-coded, accepted as interactive input, a command-line argument, or via another mechanism.
+Whatever method is used, it will result in a piece of data that represents a filepath.
+For this project, we'll use a string.
+As you begin to use other Python modules, you may use a different data type.
+
+### Find all the files in that folder
+
+This step will accept a folder path as input and produce a piece of data that contains the filepaths of all of the files in the folder.
+Again, there are many options to accomplish this task.
+The more important thing is determining what the data will be.
+
+Python has a few standard methods to store multiple pieces of information: lists, tuples, dictionaries, named tuples, dataclasses, objects.
+Each item in this list has more potential functionality than the last.
+A list is an ordered group of data.
+A tuple is an ordered group that can't change.
+A dictionary is an group of data where each item has name.
+The other three continue to add features, but for our purposes, a list is all we need.
+
+And the items in that list will each be a string that represents a filepath.
+
+### Find all the files that we care about among those files
+
+This step starts with a list of filepaths and produces a new list of filepaths.
+The output list contains only items that were in the input list.
+We need to define what are the characteristics that we're filtering for.
+
+### Run the operation against each of those files
+
+This step starts with a list of filepaths and runs some operation.
+Depending on the operation, the output will look very different.
+For example:
+
+* rename files: report if the rename failed, otherwise report nothing
+* collect file metadata: create a list of dictionaries where each dictionary contains metadata from one file
+* transcode files: report if the transcode failed, save a log of teh transcode process to a file if successful
+* validate files: create one list of valid files and one list of invalid files
+
+Some of these scenarios are complex.
+It might be worth breaking them down into smaller steps.
+For the purpose of this module, we'll rename files.
+
+### Codified
+
+We still don't have any Python code, but we've started pulling in some Python knowledge by thinking about what data is generated and used at what step.
+That can be very helpful to focus your work through during development.
+You can focus on creating the next piece of data and ignore something that you plan to accomplish later.
+
+You can always update your plan.
+Maybe you realize that you need a step to produce a dictionary, or that a step needs another piece of data as input.
+Once documented, you can then figure out how that change affects the rest of your script and incorporate it.
+
+## Planning conclusion
+
+That's it.
+We have broken down the overall problem into a set of smaller challenges that have definable results.
+That gives a path to follow.
+As you go along the path, you may realize that it's headed the wrong way or that there are shortcuts.
+That's fine, you can always update you plan.
+The more important part is that you have a path to follow.
+And future-you will be able to follow that path when you return to the script.
+
+Think what would happen if you started to write code to "perform an operation on a set of files" without a plan.
+It would probably get the job done.
+But as you try new approaches, modify old approaches, fix bugs, and otherwise get the things working, the code will collect some of that chaos.
+And future-you will have to decipher that chaos.
+
+So, let's continue onwards and turn the plan into actual code.
