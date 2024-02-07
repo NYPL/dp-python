@@ -99,10 +99,16 @@ def main():
 
         get_export_headers = {
             "Preservica-Access-Token": accesstoken,
+            "accept": "application/octet-stream",
             "Content-Type": "application/xml;charset=UTF-8"
         }
         # make the API call
         get_export_request = requests.get(get_export_url, headers=get_export_headers)
+        # save the file
+        save_file = open("download.zip", "wb")  # wb: write binary
+        save_file.write(get_export_request.content)
+        save_file.close()
+
 
         # checking for API status code
         if get_export_request.status_code == 200:
