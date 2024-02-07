@@ -90,7 +90,7 @@ def main():
     # make the API call
     get_progress_response = requests.get(check_progress_url, headers=get_progress_headers)
 
-    # checking for API status call
+    # checking for API status code
     if get_progress_response.status_code == 200:
         logging.info(f"Progress completed. Will proceed to download")
         time.sleep(60)
@@ -101,21 +101,17 @@ def main():
             "Preservica-Access-Token": accesstoken,
             "Content-Type": "application/xml;charset=UTF-8"
         }
-        try:
-            get_export_request = requests.get(get_export_url, headers=get_export_headers)
-            if get_export_request.status_code == 200:
-                logging.info(f"The exported content is in the process of being downloaded")
-            else:
-                logging.error(f"Get export request unsuccessful: {get_export_request.status_code}")
-        except:
-            logging.error(f"Unsuccessful download.")
+        # make the API call
+        get_export_request = requests.get(get_export_url, headers=get_export_headers)
+
+        # checking for API status code
+        if get_export_request.status_code == 200:
+            logging.info(f"The exported content is in the process of being downloaded")
+        else:
+            logging.error(f"Get export request unsuccessful: {get_export_request.status_code}")
 
     else:
         logging.error(f"GET progress request unsuccessful: code {get_progress_response.status_code}")
-
-
-
-
 
 
 if __name__ == "__main__":
