@@ -46,6 +46,7 @@ def create_token(credential_set: str, token_file: Path) -> str:
 
 def main():
 
+    # generate token
     user = input("Enter user name: ")
     pw = input("Enter password: ")
     tenant = input("Enter tenant (nypl or nypltest)")
@@ -54,6 +55,7 @@ def main():
 
     accesstoken = get_token(credential_set)
 
+    # set up for the first call: POST a request
     export_so_url = "https://nypl.preservica.com/api/entity/structural-objects/85fa0068-f63b-49fc-8310-e0e11944c45a/exports"
     export_headers = {
         "Preservica-Access-Token": accesstoken,
@@ -66,9 +68,10 @@ def main():
                                 + "<IncludedGenerations>All</IncludedGenerations>" \
                                 + "<IncludeParentHierarchy>false</IncludeParentHierarchy>" \
                                 + "</ExportAction>"
-
+    # make the API call
     post_response = requests.post(export_so_url, headers=export_headers, data=xml_str)
 
+    # checking for API status code
     if post_response.status_code == 202:
         logging.info(f"Progress token: {post_response.text}")
         progress_token = post_response.text
@@ -77,18 +80,21 @@ def main():
         logging.error(f"POST request unsuccessful: code {post_response.status_code}")
         sys.exit(0)
 
+    # set up for the second call: GET the progress status
     check_progress_url = f"https://nypl.preservica.com/api/entity/progress/{progress_token}?includeErrors=true"
 
     get_progress_headers = {
         "Preservica-Access-Token": accesstoken,
         "accept": "application/xml;charset=UTF-8"
     }
+    # make the API call
     get_progress_response = requests.get(check_progress_url, headers=get_progress_headers)
 
+    # checking for API status call
     if get_progress_response.status_code == 200:
         logging.info(f"Progress completed. Will proceed to download")
         time.sleep(60)
-
+        # set up for the third call: GET the export
         get_export_url = f"https://nypl.preservica.com/api/entity/actions/exports/{progress_token}/content"
 
         get_export_headers = {
