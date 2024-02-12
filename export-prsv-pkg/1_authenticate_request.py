@@ -45,7 +45,7 @@ def create_token(credential_set: str, token_file: Path) -> str:
     return data["token"]
 
 def post_so_api(uuid: str, accesstoken: str) -> requests.Response:
-
+    """Make a POST request to the export Structural Object endpoint"""
     export_so_url = f"https://nypl.preservica.com/api/entity/structural-objects/{uuid}/exports"
     export_headers = {
         "Preservica-Access-Token": accesstoken,
@@ -75,6 +75,8 @@ def main():
     accesstoken = get_token(credential_set)
 
     post_response = post_so_api("85fa0068-f63b-49fc-8310-e0e11944c45a", accesstoken)
+    print(dir(post_response))
+    print(post_response.status_code)
 
 if __name__ == "__main__":
     main()
