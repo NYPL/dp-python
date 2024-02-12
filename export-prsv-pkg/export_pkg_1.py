@@ -77,6 +77,7 @@ def get_progress_api(progresstoken, accesstoken) -> requests.Response:
     return get_progress_response
 
 def get_export_download_api(progresstoken, accesstoken):
+    """Make a GET request to download the package"""
     get_export_url = f"https://nypl.preservica.com/api/entity/actions/exports/{progresstoken}/content"
 
     get_export_headers = {
