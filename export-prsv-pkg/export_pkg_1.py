@@ -63,6 +63,31 @@ def post_so_api(uuid: str, accesstoken: str) -> requests.Response:
 
     return post_response
 
+def get_progress_api(progresstoken, accesstoken) -> requests.Response:
+    """Make a GET request to check progress of the export request"""
+    check_progress_url = f"https://nypl.preservica.com/api/entity/progress/{progresstoken}?includeErrors=true"
+
+    get_progress_headers = {
+        "Preservica-Access-Token": accesstoken,
+        "accept": "application/xml;charset=UTF-8"
+    }
+    # make the API call
+    get_progress_response = requests.get(check_progress_url, headers=get_progress_headers)
+
+    return get_progress_response
+
+def get_export_download_api(progresstoken, accesstoken):
+    get_export_url = f"https://nypl.preservica.com/api/entity/actions/exports/{progresstoken}/content"
+
+    get_export_headers = {
+        "Preservica-Access-Token": accesstoken,
+        "accept": "application/octet-stream",
+        "Content-Type": "application/xml;charset=UTF-8"
+        }
+    get_progress_response = requests.get(get_export_url, headers=get_export_headers)
+
+    return get_progress_response
+
 def main():
 
     # generate token
@@ -73,44 +98,28 @@ def main():
     credential_set = (user, pw, tenant)
 
     accesstoken = get_token(credential_set)
+    so_uuid = "85fa0068-f63b-49fc-8310-e0e11944c45a"
 
-    post_response = post_so_api("85fa0068-f63b-49fc-8310-e0e11944c45a", accesstoken)
+    post_response = post_so_api(so_uuid, accesstoken)
 
     # checking for API status code
     if post_response.status_code == 202:
         logging.info(f"Progress token: {post_response.text}")
-        progress_token = post_response.text
+        progresstoken = post_response.text
         time.sleep(10)
     else:
         logging.error(f"POST request unsuccessful: code {post_response.status_code}")
         sys.exit(0)
 
-    # set up for the second call: GET the progress status
-    check_progress_url = f"https://nypl.preservica.com/api/entity/progress/{progress_token}?includeErrors=true"
-
-    get_progress_headers = {
-        "Preservica-Access-Token": accesstoken,
-        "accept": "application/xml;charset=UTF-8"
-    }
-    # make the API call
-    get_progress_response = requests.get(check_progress_url, headers=get_progress_headers)
-
+    get_progress_response = get_progress_api(progresstoken, accesstoken)
     # checking for API status code
     if get_progress_response.status_code == 200:
         logging.info(f"Progress completed. Will proceed to download")
         time.sleep(60)
-        # set up for the third call: GET the export
-        get_export_url = f"https://nypl.preservica.com/api/entity/actions/exports/{progress_token}/content"
 
-        get_export_headers = {
-            "Preservica-Access-Token": accesstoken,
-            "accept": "application/octet-stream",
-            "Content-Type": "application/xml;charset=UTF-8"
-        }
-        # make the API call
-        get_export_request = requests.get(get_export_url, headers=get_export_headers)
+        get_export_request = get_export_download_api(progresstoken, accesstoken)
         # save the file
-        save_file = open("download.zip", "wb")  # wb: write binary
+        save_file = open(f"{so_uuid}.zip", "wb")  # wb: write binary
         save_file.write(get_export_request.content)
         save_file.close()
 
