@@ -44,7 +44,7 @@ def create_token(credential_set: str, token_file: Path) -> str:
 
     return data["token"]
 
-def post_so_api(uuid, accesstoken):
+def post_so_api(uuid: str, accesstoken: str) -> requests.Response:
 
     export_so_url = f"https://nypl.preservica.com/api/entity/structural-objects/{uuid}/exports"
     export_headers = {
