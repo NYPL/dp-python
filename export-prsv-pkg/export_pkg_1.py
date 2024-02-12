@@ -112,27 +112,28 @@ def main():
         logging.error(f"POST request unsuccessful: code {post_response.status_code}")
         sys.exit(0)
 
-    get_progress_response = get_progress_api(progresstoken, accesstoken)
-    # checking for API status code
-    if get_progress_response.status_code == 200:
-        logging.info(f"Progress completed. Will proceed to download")
-        time.sleep(60)
-
-        get_export_request = get_export_download_api(progresstoken, accesstoken)
-        # save the file
-        save_file = open(f"{so_uuid}.zip", "wb")  # wb: write binary
-        save_file.write(get_export_request.content)
-        save_file.close()
-
-
-        # checking for API status code
-        if get_export_request.status_code == 200:
-            logging.info(f"The exported content is in the process of being downloaded")
+    # checking for API status code for 15 times. with 5 secs interval
+    for _ in range(15):
+        time.sleep(5)
+        get_progress_response = get_progress_api(progresstoken, accesstoken)
+        if get_progress_response.status_code != 200:
+            logging.error(f"""GET progress request unsuccessful:
+                          code {get_progress_response.status_code}""")
+            return
         else:
-            logging.error(f"Get export request unsuccessful: {get_export_request.status_code}")
+            logging.info(f"Progress completed. Will proceed to download")
+            time.sleep(60)
+            get_export_request = get_export_download_api(progresstoken, accesstoken)
+            # checking for API status code
+            if get_export_request.status_code == 200:
+                logging.info(f"The exported content is in the process of being downloaded")
+                # save the file
+                save_file = open(f"{so_uuid}.zip", "wb")  # wb: write binary
+                save_file.write(get_export_request.content)
+                save_file.close()
+            else:
+                logging.error(f"Get export request unsuccessful: {get_export_request.status_code}")
 
-    else:
-        logging.error(f"GET progress request unsuccessful: code {get_progress_response.status_code}")
 
 
 if __name__ == "__main__":
