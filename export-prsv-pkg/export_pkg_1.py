@@ -44,19 +44,9 @@ def create_token(credential_set: str, token_file: Path) -> str:
 
     return data["token"]
 
-def main():
+def post_so_api(uuid, accesstoken):
 
-    # generate token
-    user = input("Enter user name: ")
-    pw = input("Enter password: ")
-    tenant = input("Enter tenant (nypl or nypltest)")
-
-    credential_set = (user, pw, tenant)
-
-    accesstoken = get_token(credential_set)
-
-    # set up for the first call: POST a request
-    export_so_url = "https://nypl.preservica.com/api/entity/structural-objects/85fa0068-f63b-49fc-8310-e0e11944c45a/exports"
+    export_so_url = f"https://nypl.preservica.com/api/entity/structural-objects/{uuid}/exports"
     export_headers = {
         "Preservica-Access-Token": accesstoken,
         "Content-Type": "application/xml;charset=UTF-8",
@@ -70,6 +60,21 @@ def main():
                                 + "</ExportAction>"
     # make the API call
     post_response = requests.post(export_so_url, headers=export_headers, data=xml_str)
+
+    return post_response
+
+def main():
+
+    # generate token
+    user = input("Enter user name: ")
+    pw = input("Enter password: ")
+    tenant = input("Enter tenant (nypl or nypltest)")
+
+    credential_set = (user, pw, tenant)
+
+    accesstoken = get_token(credential_set)
+
+    post_response = post_so_api("85fa0068-f63b-49fc-8310-e0e11944c45a", accesstoken)
 
     # checking for API status code
     if post_response.status_code == 202:
