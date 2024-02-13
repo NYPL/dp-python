@@ -1,10 +1,6 @@
 import requests
 from pathlib import Path
 import time
-import logging
-
-# set logging level: NOTSET, DEBUG, INFO, WARN, ERROR, CRITICAL
-logging.basicConfig(level=logging.INFO)
 
 def get_token(credential_set: str) -> str:
     """
@@ -37,7 +33,7 @@ def create_token(credential_set: str, token_file: Path) -> str:
     data = response.json()
 
     if not data["success"]:
-        logging.error("Token did not generate successfully")
+        print("Token did not generate successfully")
 
     # write token to token.file for later reuse
     token_file.write_text(f'{str(time.time())}\n{data["token"]}')
