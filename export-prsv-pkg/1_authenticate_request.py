@@ -31,6 +31,7 @@ def create_token(credential_set: str, token_file: Path) -> str:
     payload = f"username={user}&password={pw}&tenant={tenant}"
     response = requests.post(url, headers=headers, data=payload)
     data = response.json()
+    # print(data)
 
     if not data["success"]:
         print("Token did not generate successfully")
@@ -69,11 +70,12 @@ def main():
     credential_set = (user, pw, tenant)
 
     accesstoken = get_token(credential_set)
+    # print(f"Access token: {accesstoken}")
     so_uuid = "85fa0068-f63b-49fc-8310-e0e11944c45a"
 
     post_response = post_so_api(so_uuid, accesstoken)
-    print(dir(post_response))
-    print(post_response.status_code)
+    # print(dir(post_response))
+    # print(post_response.status_code)
 
 if __name__ == "__main__":
     main()
