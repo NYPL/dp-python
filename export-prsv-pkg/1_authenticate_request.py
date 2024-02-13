@@ -73,8 +73,9 @@ def main():
     credential_set = (user, pw, tenant)
 
     accesstoken = get_token(credential_set)
+    so_uuid = "85fa0068-f63b-49fc-8310-e0e11944c45a"
 
-    post_response = post_so_api("85fa0068-f63b-49fc-8310-e0e11944c45a", accesstoken)
+    post_response = post_so_api(so_uuid, accesstoken)
     print(dir(post_response))
     print(post_response.status_code)
 
