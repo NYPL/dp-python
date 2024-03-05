@@ -131,6 +131,7 @@ def main():
                 save_file = open(f"{so_uuid}.zip", "wb")  # wb: write binary
                 save_file.write(get_export_request.content)
                 save_file.close()
+                break # Exit the loop
             else:
                 logging.error(f"Get export request unsuccessful: {get_export_request.status_code}")
 
