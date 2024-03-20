@@ -3,8 +3,38 @@ from pathlib import Path
 import time
 import logging
 import sys
+import argparse
+import json
+import xml.etree.ElementTree as ET
+import re
 
 logging.basicConfig(level=logging.INFO)
+
+def _make_parser():
+    parser = argparse.ArgumentParser(
+        description="""Export packages or collections of packages
+                       Must provide a collection id or a package id
+                       Can take multiple ids in an argument, separating
+                       them with space"""
+    )
+    parser.add_argument(
+        "--collection_id",
+        "-cid",
+        required=False,
+        help="""Provide collection ID, e.g. M1234, to export
+        all collection packages metadata. Can take multiple ids, separate
+        with space""",
+    )
+    parser.add_argument(
+        "--package_id",
+        "-pid",
+        required=False,
+        help="""Provide package ID, e.g. M1234_ER_1, to export
+        the package's metadata. Can take multiple ids, separated with space""",
+    )
+
+    return parser
+
 
 def get_token(credential_set: str) -> str:
     """
@@ -43,6 +73,80 @@ def create_token(credential_set: str, token_file: Path) -> str:
     token_file.write_text(f'{str(time.time())}\n{data["token"]}')
 
     return data["token"]
+
+def search_preservica_api(
+    accesstoken: str, query_params: dict, parentuuid: str
+) -> requests.Response:
+    query = json.dumps(query_params)
+    search_url = f"https://nypl.preservica.com/api/content/search-within?q={query}&parenthierarchy={parentuuid}&start=0&max=-1&metadata=''"
+    search_headers = {
+        "Preservica-Access-Token": accesstoken,
+        "Content-Type": "application/xml;charset=UTF-8",
+    }
+    search_response = requests.get(search_url, headers=search_headers)
+    return search_response
+
+def get_collection_uuids(
+    accesstoken: str, id: str, parentuuid: str
+) -> requests.Response:
+    query_params = {
+        "q": "",
+        "fields": [{"name": "spec.specCollectionID", "values": [id]}],
+    }
+    return search_preservica_api(accesstoken, query_params, parentuuid)
+
+def get_packages_uuids(
+    accesstoken: str, pkg_id: str, parentuuid: str
+) -> requests.Response:
+    col_id = re.search(r"(M\d+)_(ER|DI|EM)_\d+", pkg_id).group(1)
+    query_params = {
+        "q": "",
+        "fields": [
+            {"name": "xip.title", "values": [pkg_id]},
+            {"name": "spec.specCollectionID", "values": [col_id]},
+        ],
+    }
+    return search_preservica_api(accesstoken, query_params, parentuuid)
+
+def parse_structural_object_uuid(res: requests.Response) -> list:
+    """function to parse json API response into a list of UUIDs"""
+    uuid_ls = list()
+    json_obj = json.loads(res.text)
+    obj_ids = json_obj["value"]["objectIds"]
+    for sdbso in obj_ids:
+        uuid_ls.append(sdbso[-36:])
+
+    return uuid_ls
+
+def find_apiversion(token: str) -> str:
+    schemas_url = "https://nypl.preservica.com/api/admin/schemas"
+
+    headers = {
+        "Preservica-Access-Token": token,
+        "Content-Type": "application/xml",
+    }
+    response = requests.request("GET", schemas_url, headers=headers)
+    root = ET.fromstring(response.text)
+
+    version_search = re.search(r"v(\d+\.\d+)\}", root.tag)
+    if version_search:
+        return version_search.group(1)
+    else:
+        return ""
+
+def get_pkg_title(accesstoken: str, pkg_uuid: str) -> str:
+    get_so_url = f"https://nypl.preservica.com/api/entity/structural-objects/{pkg_uuid}"
+    get_pkg_headers = {
+        "Preservica-Access-Token": accesstoken,
+        "Content-Type": "application/xml;charset=UTF-8",
+    }
+    res = requests.get(get_so_url, headers=get_pkg_headers)
+
+    root = ET.fromstring(res.text)
+    version = find_apiversion(accesstoken)
+    title = root.find(f".//{{http://preservica.com/XIP/v{version}}}Title").text
+
+    return title
 
 def post_so_api(uuid: str, accesstoken: str) -> requests.Response:
     """Make a POST request to the export Structural Object endpoint"""
@@ -91,6 +195,9 @@ def get_export_download_api(progresstoken, accesstoken):
 
 def main():
 
+    parser = _make_parser()
+    args = parser.parse_args()
+
     # generate token
     user = input("Enter user name: ")
     pw = input("Enter password: ")
@@ -99,41 +206,69 @@ def main():
     credential_set = (user, pw, tenant)
 
     accesstoken = get_token(credential_set)
-    so_uuid = "85fa0068-f63b-49fc-8310-e0e11944c45a"
 
-    post_response = post_so_api(so_uuid, accesstoken)
-
-    # checking for API status code
-    if post_response.status_code == 202:
-        logging.info(f"Progress token: {post_response.text}")
-        progresstoken = post_response.text
-        time.sleep(10)
+    if "test" in tenant:
+        digarch_uuid = "c0b9b47a-5552-4277-874e-092b3cc53af6"
     else:
-        logging.error(f"POST request unsuccessful: code {post_response.status_code}")
-        sys.exit(0)
+        digarch_uuid = "e80315bc-42f5-44da-807f-446f78621c08"
 
-    # checking for API status code for 15 times. with 5 secs interval
-    for _ in range(15):
-        time.sleep(5)
-        get_progress_response = get_progress_api(progresstoken, accesstoken)
-        if get_progress_response.status_code != 200:
-            logging.error(f"""GET progress request unsuccessful:
-                          code {get_progress_response.status_code}""")
-            return
+    pkg_dict = dict()
+
+    if args.collection_id:
+        col_id_ls = args.collection_id.split()
+        for col_id in col_id_ls:
+            res = get_collection_uuids(accesstoken, col_id, digarch_uuid)
+            so_uuids = parse_structural_object_uuid(res)
+
+            for uuid in so_uuids:
+                pkg_title = get_pkg_title(accesstoken, uuid)
+                pkg_dict[pkg_title] = uuid
+
+    if args.package_id:
+        pkg_id_ls = args.package_id.split()
+        for pkg_id in pkg_id_ls:
+            res = get_packages_uuids(accesstoken, pkg_id, digarch_uuid)
+            uuid = parse_structural_object_uuid(res)
+            for id in uuid:
+                pkg_title = get_pkg_title(accesstoken, id)
+                pkg_dict[pkg_title] = uuid[0]
+
+    for pkg in pkg_dict:
+        accesstoken_a = get_token(credential_set)
+
+        post_response = post_so_api(pkg_dict[pkg], accesstoken_a)
+
+        # checking for API status code
+        if post_response.status_code == 202:
+            logging.info(f"Progress token: {post_response.text}")
+            progresstoken = post_response.text
+            time.sleep(10)
         else:
-            logging.info(f"Progress completed. Will proceed to download")
-            time.sleep(60)
-            get_export_request = get_export_download_api(progresstoken, accesstoken)
-            # checking for API status code
-            if get_export_request.status_code == 200:
-                logging.info(f"The exported content is in the process of being downloaded")
-                # save the file
-                save_file = open(f"{so_uuid}.zip", "wb")  # wb: write binary
-                save_file.write(get_export_request.content)
-                save_file.close()
-                break # Exit the loop
+            logging.error(f"POST request unsuccessful: code {post_response.status_code}")
+            sys.exit(0)
+
+        # checking for API status code for 15 times. with 5 secs interval
+        for _ in range(15):
+            time.sleep(5)
+            get_progress_response = get_progress_api(progresstoken, accesstoken_a)
+            if get_progress_response.status_code != 200:
+                logging.error(f"""GET progress request unsuccessful:
+                            code {get_progress_response.status_code}""")
+                return
             else:
-                logging.error(f"Get export request unsuccessful: {get_export_request.status_code}")
+                logging.info(f"Progress completed. Will proceed to download")
+                time.sleep(60)
+                get_export_request = get_export_download_api(progresstoken, accesstoken_a)
+                # checking for API status code
+                if get_export_request.status_code == 200:
+                    logging.info(f"The exported content is in the process of being downloaded")
+                    # save the file
+                    save_file = open(f"{pkg}.zip", "wb")  # wb: write binary
+                    save_file.write(get_export_request.content)
+                    save_file.close()
+                    break # Exit the loop
+                else:
+                    logging.error(f"Get export request unsuccessful: {get_export_request.status_code}")
 
 
 
