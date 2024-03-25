@@ -76,6 +76,7 @@ def main():
     post_response = post_so_api(so_uuid, accesstoken)
     # print(dir(post_response))
     # print(post_response.status_code)
+    # print(post_response.text)
 
 if __name__ == "__main__":
     main()
